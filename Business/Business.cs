@@ -19,10 +19,16 @@ namespace Roleplay.Business
 
         public IList<Job> JobEntries { get; set; } = new List<Job>();
 
+        public IList<Job> Jobs { get; set; } = new List<Job>();
+
         public BankAccount ActiveBankAccount;
 
         public IList<BusinessMemberInvitation> MembersInvitations { get; set; } = new List<BusinessMemberInvitation>();
 
+        /// <summary>
+        /// <para>Create a business based on name (business name) and OwnerId (SteamID)</para>
+        /// Also run [RoleplayGameEvent.Common.ClientJoinedBusiness]
+        /// </summary>
         public Business(string name, long ownerId) {
             this.Name = name;
             this.OwnerId = ownerId;
@@ -36,14 +42,34 @@ namespace Roleplay.Business
             Event.Run("business.common.joined", businessId, clientId);
         }
 
-        public void AddJobToMember()
+        /// <summary>
+        /// Add a job to all members of your business 
+        /// </summary>
+        public void AddJobToMembers(Job job)
         {
             foreach(var member in Members)
             {
-                member.SetActiveJob(JobLibrary.ButcherJob);
+                member.SetActiveJob(job);
             }
         }
 
+        /// <summary>
+        /// Add a job to a member of your business according to the ClientId
+        /// </summary>
+        public bool AddJobToMember(Job job, long clientId)
+        {
+            var member = GetMemberById(clientId);
+
+            if (member == null || member.GetActiveJobById(job.Id).Id == job.Id)
+                return false;
+
+            member.SetActiveJob(job);
+            return true;
+        }
+
+        /// <summary>
+        /// Add a member to your business
+        /// </summary>
         public bool AddMember(BusinessMember member)
         {
             if (GetMemberById(member.ClientId) == null)
@@ -60,12 +86,18 @@ namespace Roleplay.Business
             }
         }
 
+        /// <summary>
+        /// Remove a member from your business
+        /// </summary>
         public bool RemoveMember(BusinessMember member)
         {
             Members.Remove(member);
             return true;
         }
 
+        /// <summary>
+        /// Remove a member from your business by id (SteamID)
+        /// </summary>
         public bool RemoveMemberById(long clientId)
         {
             BusinessMember businessMember = GetMemberById(clientId);
@@ -80,6 +112,9 @@ namespace Roleplay.Business
             }
         }
 
+        /// <summary>
+        /// Get all members of your business
+        /// </summary>
         public IReadOnlyCollection<IClient> GetMembersClients()
         {
             List<IClient> clients = new List<IClient>();
@@ -90,6 +125,9 @@ namespace Roleplay.Business
             return clients;
         }
 
+        /// <summary>
+        /// Get a member from clientId (SteamID)
+        /// </summary>
         public BusinessMember GetMemberById(long id)
         {
             foreach (var member in Members)
@@ -102,6 +140,10 @@ namespace Roleplay.Business
 
             return null;
         }
+
+        /// <summary>
+        /// Get a member invitation from clientId (SteamID)
+        /// </summary>
         public BusinessMemberInvitation GetMemberInvitationById(long id)
         {
             foreach (var memberInvitation in MembersInvitations)
@@ -115,6 +157,9 @@ namespace Roleplay.Business
             return null;
         }
 
+        /// <summary>
+        /// Add a member invitation for your business
+        /// </summary>
         public bool AddMemberInvitation(BusinessMemberInvitation invitation)
         {
             if (GetMemberById(invitation.ClientId) == null && GetMemberInvitationById(invitation.ClientId) == null)
@@ -138,12 +183,18 @@ namespace Roleplay.Business
             }
         }
 
+        /// <summary>
+        /// Remove a member invitation
+        /// </summary>
         public bool RemoveMemberInvitation(BusinessMemberInvitation memberInvitation)
         {
             MembersInvitations.Remove(memberInvitation);
             return true;
         }
 
+        /// <summary>
+        /// Remove a member invitation by ClientId (SteamID)
+        /// </summary>
         public bool RemoveMemberInvitationByClientId(long clientId)
         {
             BusinessMemberInvitation memberInvitation = GetMemberInvitationById(clientId);

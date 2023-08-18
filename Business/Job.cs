@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Roleplay.Business
@@ -10,14 +11,13 @@ namespace Roleplay.Business
 
 
     public class Job {
-        public long Id;
+        public Guid Id = Guid.NewGuid();
         public string Title;
         public List<JobGrade> Grades;
         public PaymentMethod PaymentType;
 
-        public Job(long id, string title, List<JobGrade> grades, PaymentMethod paymentType)
+        public Job(string title, List<JobGrade> grades, PaymentMethod paymentType)
         {
-            this.Id = id;
             this.Title = title;
             this.Grades = grades;
             this.PaymentType = paymentType;

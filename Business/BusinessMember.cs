@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Roleplay.Business
@@ -15,7 +16,7 @@ namespace Roleplay.Business
             this.ActiveJobs = activeJobs;
         }
 
-        public Job? GetActiveJobById(long jobId)
+        public Job? GetActiveJobById(Guid jobId)
         {
             foreach (var job in ActiveJobs)
             {
@@ -38,7 +39,7 @@ namespace Roleplay.Business
             return false;
         }
 
-        public bool RemoveActiveJob(long jobToRemoveId)
+        public bool RemoveActiveJob(Guid jobToRemoveId)
         {
             if (this.GetActiveJobById(jobToRemoveId) != null)
             {
