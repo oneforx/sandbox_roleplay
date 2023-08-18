@@ -1,0 +1,17 @@
+BusinessPanel {
+    display: flex;
+    flex-direction: column;
+    background-color: red;
+    margin: auto;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+
+    .navigator-canvas {
+        flex-direction: column;
+        height: 100%;
+        flex-grow: 1;
+        flex-shrink: 0;
+    }
+}
