@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Roleplay.Business
 {
-    public static partial class JobLibrary
+    public partial class JobArchetypeLibrary
     {
         public static JobGrade Chief = new(0, "Chief", 2);
         public static JobGrade Manager = new(1, "Manager", 1);

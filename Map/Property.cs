@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sandbox;
 
 namespace Roleplay.Map
 {
@@ -22,18 +23,23 @@ namespace Roleplay.Map
     public class Property
     {
         public int Id { get; set; }
-        public int RegionId { get; set; }
+        public Guid RegionId { get; set; }
         public PropertyType Type { get; set; }
 
         public long OwnerId { get; set; }
 
         public PropertyState State { get; set; } = PropertyState.Vacant;
 
-        public Property(int id, int regionId, PropertyType type)
+        public Property(int id, Guid regionId, PropertyType type)
         {
             Id = id;
             RegionId = regionId;
             Type = type;
+        }
+
+        public IList<IEntity> GetAllPropertyPartEntities()
+        {
+
         }
     }
 }

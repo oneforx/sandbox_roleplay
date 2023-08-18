@@ -11,7 +11,7 @@ namespace Roleplay.Business
     public class BusinessMemberInvitation
     {
         public long ClientId { get; set; }
-        public Job Job { get; set; } = JobLibrary.ButcherJob;
+        public Job Job { get; set; } = JobArchetypeLibrary.ButcherJob;
 
         public BusinessMemberInvitation(long clientId, Job job)
         {
