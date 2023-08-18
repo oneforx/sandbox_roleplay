@@ -26,12 +26,12 @@ namespace Roleplay.Business
         public Business(string name, long ownerId) {
             this.Name = name;
             this.OwnerId = ownerId;
-            Event.Run("business.common.joined", ownerId);
-            ClientJoined(To.Single(ClientManager.GetClientById(ownerId)), this.Id, ownerId); ;
+            Event.Run("business.common.joined", this, ownerId);
+            ClientJoined(To.Single(ClientManager.GetClientById(ownerId)), this, ownerId); ;
         }
 
         [ClientRpc]
-        public static void ClientJoined(Guid businessId, long clientId)
+        public static void ClientJoined(Business businessId, long clientId)
         {
             Event.Run("business.common.joined", businessId, clientId);
         }
@@ -49,8 +49,8 @@ namespace Roleplay.Business
             if (GetMemberById(member.ClientId) == null)
             {
                 Members.Add(member);
-                Event.Run("business.common.joined", this.Id, member.ClientId);
-                ClientJoined(To.Multiple(GetMembersClients()), this.Id, member.ClientId);
+                Event.Run("business.common.joined", this, member.ClientId);
+                ClientJoined(To.Multiple(GetMembersClients()), this, member.ClientId);
                 return true;
             }
             else

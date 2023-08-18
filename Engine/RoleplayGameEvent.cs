@@ -21,7 +21,7 @@ namespace Roleplay.Engine
 
         public static class Common
         {
-            [MethodArguments(typeof(Guid), typeof(long))]
+            [MethodArguments(typeof(Business.Business), typeof(long))]
             public class ClientJoinedBusiness : EventAttribute
             {
                 public ClientJoinedBusiness() : base("business.common.joined")
