@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using Roleplay.Business;
+using Sandbox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,14 +22,29 @@ namespace Roleplay.Engine
 
         public static class Common
         {
-            [MethodArguments(typeof(Business.Business), typeof(long))]
+            public sealed class ClientJoinedBusinessEvent
+            {
+                //
+                // Résumé :
+                //     The client that has joined.
+                public IClient Client { get; init; }
+                public Business.Business Business { get; init; }
+
+                internal ClientJoinedBusinessEvent(IClient client, Business.Business business)
+                {
+                    Client = client;
+                    Business = business;
+                }
+            }
+
+            [MethodArguments(new Type[] { typeof(ClientJoinedBusinessEvent) })]
             public class ClientJoinedBusiness : EventAttribute
             {
                 public ClientJoinedBusiness() : base("business.common.joined")
                 {
-
                 }
             }
+
         }
     }
 }

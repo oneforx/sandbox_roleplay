@@ -8,18 +8,18 @@ namespace Roleplay.Business
         public static JobGrade Manager = new(1, "Manager", 1);
         public static JobGrade Novice = new(2, "Novice", 0);
 
-        public static Job ButcherJob = new("Butcher", new List<JobGrade>
+        /*public static Job ButcherJob = new("Butcher", new List<JobGrade>
         {
             Chief,
             Manager,
             Novice
-        }, PaymentMethod.TaskCompletion);
+        }, PaymentMethod.TaskCompletion);*/
 
-        public static Job PoliceJob = new("Police", new List<JobGrade>
+        /*public static Job PoliceJob = new("Police", new List<JobGrade>
         {
             Chief,
             Manager,
             Novice
-        }, PaymentMethod.RegularInterval);
+        }, PaymentMethod.RegularInterval);*/
     }
 }

@@ -1,3 +1,4 @@
+using Roleplay.Engine;
 using Sandbox;
 using Sandbox.Engine;
 using System;
@@ -61,7 +62,6 @@ namespace Roleplay.Business
 
         public void Save()
         {
-            Log.Info(this.Serialize());
             FileSystem.Data.WriteAllText(BusinessRegistryName + ".json", this.Serialize());
         }
     }

@@ -39,7 +39,7 @@ namespace Roleplay.Map
 
         public IList<IEntity> GetAllPropertyPartEntities()
         {
-
+            throw new Exception("Not implemented");
         }
     }
 }

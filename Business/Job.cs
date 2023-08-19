@@ -13,15 +13,16 @@ namespace Roleplay.Business
     public class Job {
         public Guid Id = Guid.NewGuid();
         public string Title;
+        public JobArchetype Archetype { get; set; }
+
         public List<JobGrade> Grades;
         public PaymentMethod PaymentType;
 
-        public Job(string title, List<JobGrade> grades, PaymentMethod paymentType)
+        public Job(string title, JobArchetype archetype, PaymentMethod paymentType)
         {
             this.Title = title;
-            this.Grades = grades;
+            this.Archetype = archetype;
             this.PaymentType = paymentType;
-
         }
     }
 

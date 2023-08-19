@@ -7,7 +7,13 @@ using System.Collections.Generic;
 
 namespace Roleplay.Business
 {
-    public partial class Business: BaseNetworkable {
+    public enum LeaveReason
+    {
+        None = 0,
+        Expulsed = 1,
+    }
+
+    public partial class Business {
 
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -32,15 +38,17 @@ namespace Roleplay.Business
         public Business(string name, long ownerId) {
             this.Name = name;
             this.OwnerId = ownerId;
+            Event.Register(this);
             Event.Run("business.common.joined", this, ownerId);
-            ClientJoined(To.Single(ClientManager.GetClientById(ownerId)), this, ownerId); ;
+            ClientJoined(To.Single(ClientManager.GetClientById(ownerId)), this.Id, ownerId); ;
         }
 
         [ClientRpc]
-        public static void ClientJoined(Business businessId, long clientId)
+        public static void ClientJoined(Guid businessId, long clientId)
         {
             Event.Run("business.common.joined", businessId, clientId);
         }
+        
 
         /// <summary>
         /// Add a job to all members of your business 
@@ -75,8 +83,8 @@ namespace Roleplay.Business
             if (GetMemberById(member.ClientId) == null)
             {
                 Members.Add(member);
-                Event.Run("business.common.joined", this, member.ClientId);
-                ClientJoined(To.Multiple(GetMembersClients()), this, member.ClientId);
+                Event.Run("business.common.joined", new RoleplayGameEvent.Common.ClientJoinedBusinessEvent(ClientManager.GetClientById(member.ClientId), this));
+                ClientJoined(To.Multiple(GetMembersClients()), this.Id, member.ClientId);
                 return true;
             }
             else
@@ -85,6 +93,31 @@ namespace Roleplay.Business
                 return false;
             }
         }
+
+
+        /*[RoleplayGameEvent.Common.ClientDidAction]
+        public void ListenAction(IAction action, IClient client)
+        {
+            if (Game.IsClient) return;
+
+            BusinessMember businessMember = GetMemberById(client.SteamId);
+
+            if (businessMember == null) return;
+
+            foreach (var activeJob in businessMember.ActiveJobs)
+            {
+                foreach (var task in activeJob.Archetype.Tasks)
+                {
+                    if (action.Name == task.Action.Name)
+                    {
+                        Log.Info("Hello");
+                    }
+                }
+            }
+
+            Log.Info("finished search listen action. Business.cs");
+
+        }*/
 
         /// <summary>
         /// Remove a member from your business
