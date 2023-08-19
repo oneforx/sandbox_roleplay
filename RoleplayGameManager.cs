@@ -1,24 +1,19 @@
 using Sandbox;
 using System.Collections.Generic;
 using Roleplay.Map;
-using Roleplay.Business;
 using Roleplay.Engine;
 
 #nullable enable
 namespace Roleplay
 {
-    public abstract partial class RoleplayGameManager : GameManager
+    public partial class RoleplayGameManager : GameManager
     {
         public static Database RoleplayDatabase { get; private set; }
-        public static BusinessRegistry LegalBusinessRegistry { get; set; }
-        public static MapRegistry CityRegistry { get; set; }
 
         public RoleplayGameManager(string mapName) 
         { 
             if(Game.IsServer)
             {
-                LegalBusinessRegistry = BusinessRegistry.Load("legal_business_registry");
-                CityRegistry = MapRegistry.Load(mapName);
                 RoleplayDatabase = Database.Load("backup");
             }
         }
@@ -48,7 +43,6 @@ namespace Roleplay
         {
             if (Game.IsServer)
             {
-                LegalBusinessRegistry.Save();
                 RoleplayDatabase.Save();
             }
             base.Shutdown();

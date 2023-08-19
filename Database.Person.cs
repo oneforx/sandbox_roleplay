@@ -11,6 +11,9 @@ namespace Roleplay
     public partial class Database
     {
         public Dictionary<Guid, Schemas.Person> Persons { get; set; } = new();
+        public List<Schemas.LinkPersonHasBusiness> LinkPersonHasBusinesses { get; set; } = new List<Schemas.LinkPersonHasBusiness>();
+
+        public List<Schemas.LinkPersonHasInvitation> LinkPersonHasInvitations { get; set; } = new List<Schemas.LinkPersonHasInvitation>();
 
         #region [CRUD] Person
 

@@ -9,11 +9,11 @@ namespace Roleplay.Schemas
 {
     public class BusinessJob : Table
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
-        public BusinessJob() : base("business_job")
+        public string Name { get; set; }
+        public BusinessJob(string name) : base("business_job")
         {
             Event.Register(this);
+            Name = name;
         }
 
     }

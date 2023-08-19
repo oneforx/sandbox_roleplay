@@ -17,6 +17,14 @@ namespace Roleplay.Schemas
             Name = name;
         }
 
+
+        public BusinessJob CreateJob(Database database, BusinessJob businessJobTemplate)
+        {
+            BusinessJob businessJob = database.CreateJob(businessJobTemplate);
+            database.LinkBusinessToJob(this.Id, businessJob.Id);
+            return businessJob;
+        }
+
         public Dictionary<Guid, BusinessJob> GetAllJobs(Database database)
         {
             return database.GetAllBusinessJobsByBusinessId(this.Id);
@@ -52,14 +60,23 @@ namespace Roleplay.Schemas
             return null;
         }
 
-        public BusinessMember AddMember(Database database, BusinessMember businessMember)
+        public BusinessMember CreateMember(Database database, BusinessMember newBusinessMember)
         {
-            return database.CreateBusinessMember(businessMember, this);
+            BusinessMember businessMember = database.CreateBusinessMember(newBusinessMember, this);
+            this.LinkMember(database, businessMember);
+            return businessMember;
+        }
+
+        public LinkBusinessHasMember LinkMember(Database database, BusinessMember businessMember)
+        {
+            return database.LinkBusinessMember(businessMember, this);
         }
 
         public void SetPersonOwner(Database database, Person person)
         {
             database.CreateLinkPersonToBusiness(person, this);
         }
+
+        
     }
 }

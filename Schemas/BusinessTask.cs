@@ -8,8 +8,6 @@ namespace Roleplay.Schemas
 {
     public class BusinessTask : Table
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         public BusinessTask() : base("business_task")
         {
 

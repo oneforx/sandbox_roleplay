@@ -9,7 +9,7 @@ namespace Roleplay.Engine.Utils
 {
     public static partial class Utils
     {
-        public static void RunActionBothFromClient(IAction action, IClient sourceClient)
+        public static void RunActionBothFromClient(Schemas.Action action, IClient sourceClient)
         {
             Event.Run(Roleplay.Events.Action.Common.ClientDidActionId, action, sourceClient);
             RunServer(action.Name, sourceClient.SteamId);
@@ -18,7 +18,7 @@ namespace Roleplay.Engine.Utils
         [ConCmd.Server("run_action")]
         public static void RunServer(string actionName, long sourceClientId)
         {
-            if (Actions.Library.TryGetValue(actionName, out IAction action))
+            if (Actions.Library.TryGetValue(actionName, out Schemas.Action action))
             {
                 IClient sourceClient = ClientManager.GetClientById(sourceClientId);
                 if (sourceClient != null)
@@ -37,7 +37,7 @@ namespace Roleplay.Engine.Utils
         }
 
 
-        public static void RunActionBothFromServer(IAction action, IClient sourceClient)
+        public static void RunActionBothFromServer(Schemas.Action action, IClient sourceClient)
         {
             Event.Run(Roleplay.Events.Action.Common.ClientDidActionId, action, sourceClient);
             RunClient(action.Name, sourceClient.SteamId);
@@ -46,7 +46,7 @@ namespace Roleplay.Engine.Utils
         [ClientRpc]
         public static void RunClient(string actionName, long sourceClientId)
         {
-            if (Actions.Library.TryGetValue(actionName, out IAction action))
+            if (Actions.Library.TryGetValue(actionName, out Schemas.Action action))
             {
                 IClient sourceClient = ClientManager.GetClientById(sourceClientId);
                 if (sourceClient != null)

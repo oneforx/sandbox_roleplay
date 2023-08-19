@@ -1,5 +1,4 @@
-﻿using Roleplay.Business;
-using Roleplay.Schemas;
+﻿using Roleplay.Schemas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,6 +88,19 @@ namespace Roleplay
         #endregion
 
         #region [CRUD] BusinessJob
+
+        public Schemas.BusinessJob CreateJob(BusinessJob businessJob)
+        {
+            this.BusinessJobs.Add(businessJob.Id, businessJob);
+            return this.BusinessJobs[businessJob.Id];
+        }
+
+        public Schemas.LinkBusinessHasJob LinkBusinessToJob(Guid businessId, Guid jobId)
+        {
+            LinkBusinessHasJob linkBusinessHasJob = new(businessId, jobId);
+            this.LinkBusinessHasJobs.Add(linkBusinessHasJob);
+            return linkBusinessHasJob;
+        }
 
         public Schemas.BusinessJob? GetBusinessJobById(Guid jobId)
         {
@@ -194,9 +206,14 @@ namespace Roleplay
         {
             this.BusinessMembers[businessMember.Id] = businessMember;
 
-            this.LinkBusinessHasMembers.Add(new LinkBusinessHasMember(businessMember, business));
-
             return this.BusinessMembers[businessMember.Id];
+        }
+
+        public Schemas.LinkBusinessHasMember LinkBusinessMember(Schemas.BusinessMember businessMember, Schemas.Business business)
+        {
+            LinkBusinessHasMember newLinkBusinessHasMember = new LinkBusinessHasMember(businessMember, business);
+            this.LinkBusinessHasMembers.Add(newLinkBusinessHasMember);
+            return newLinkBusinessHasMember;
         }
 
         public Schemas.BusinessMember? GetBusinessMemberById(Guid taskId)

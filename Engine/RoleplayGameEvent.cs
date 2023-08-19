@@ -1,4 +1,4 @@
-﻿using Roleplay.Business;
+﻿using Roleplay.Schemas;
 using Sandbox;
 using System;
 using System.Collections.Generic;
@@ -27,10 +27,10 @@ namespace Roleplay.Engine
                 //
                 // Résumé :
                 //     The client that has joined.
+                public Business Business { get; set; }
                 public IClient Client { get; init; }
-                public Business.Business Business { get; init; }
 
-                internal ClientJoinedBusinessEvent(IClient client, Business.Business business)
+                internal ClientJoinedBusinessEvent(IClient client, Business business)
                 {
                     Client = client;
                     Business = business;

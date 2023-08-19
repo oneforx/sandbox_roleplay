@@ -17,9 +17,6 @@ namespace Roleplay
 
         public List<Schemas.LinkBusinessMemberHasJob> LinkBusinessMemberHasJobs { get; set; } = new List<Schemas.LinkBusinessMemberHasJob>();
 
-        public List<Schemas.LinkPersonHasBusiness> LinkPersonHasBusinesses { get; set; } = new List<Schemas.LinkPersonHasBusiness>();
-
-        public List<Schemas.LinkPersonHasInvitation> LinkPersonHasInvitations { get; set; } = new List<Schemas.LinkPersonHasInvitation>();
         #endregion
     }
 }

@@ -11,6 +11,11 @@ namespace Roleplay.Schemas
         public Guid JobId { get; set; }
         public Guid BusinessId { get; set; }
         
+        public LinkBusinessHasJob(Guid businessId, Guid jobId)
+        {
+            this.JobId = jobId;
+            this.BusinessId = businessId;
+        }
 
         /*public List<Business> GetAllBusiness(Database database)
         {
