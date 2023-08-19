@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Roleplay.Engine
     {
         public static Dictionary<string, Roleplay.Schemas.Action> Library = new Dictionary<string, Roleplay.Schemas.Action>()
         {
-            /*{ "action.eat", new EatAction() }*/
+            { "action.take_item", new TakeItem() }
         };
     
         public static bool Register(Roleplay.Schemas.Action action)

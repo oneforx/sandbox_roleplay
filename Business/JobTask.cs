@@ -13,24 +13,17 @@ namespace Roleplay.Business
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
         public IList<int> Rewards { get; set; }
-        public Engine.Action Action { get; set; }
+        public Schemas.Action Action { get; set; }
 
         public bool Completed { get; set; } = false;
 
-        public JobTask(string name, IList<int> rewards, Engine.Action action)
+        public JobTask(string name, IList<int> rewards, Schemas.Action action)
         {
             this.Name = name;
 
             this.Rewards = rewards;
 
-            action.ActionCompleted += ActionCompleted;
-
             this.Action = action;
-        }
-
-        void ActionCompleted(object sender, ActionEventArgs e)
-        {
-            this.Completed = true;
         }
 
         [Roleplay.Events.Action.Common.ClientDidAction]
