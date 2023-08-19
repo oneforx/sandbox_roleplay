@@ -31,10 +31,10 @@ namespace Roleplay.Schemas
     public class Action : Table, IAction
     {
         public string Name { get; set; }
-        public Guid Id { get; set; } = Guid.NewGuid();
+
         public Action(string name) : base("action")
         {
-            this.Name = this.TableName +"."+ name;
+            this.Name = name;
         }
 
         public event ActionHandler ActionCompleted;
