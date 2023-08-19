@@ -8,12 +8,12 @@ namespace Roleplay.Engine
 {
     public static class Actions
     {
-        public static Dictionary<string, IAction> Library = new Dictionary<string, IAction>()
+        public static Dictionary<string, Roleplay.Schemas.Action> Library = new Dictionary<string, Roleplay.Schemas.Action>()
         {
-            { "action.eat", new EatAction() }
+            /*{ "action.eat", new EatAction() }*/
         };
     
-        public static bool Register(IAction action)
+        public static bool Register(Roleplay.Schemas.Action action)
         {
             Library.Add(action.Name, action);
             return true;
