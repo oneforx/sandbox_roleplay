@@ -31,7 +31,16 @@ namespace Roleplay.System
 
         public static void Load(string databaseName)
         {
-            Database.Current = Deserialize(FileSystem.Data.ReadAllText(databaseName + ".json"));
+            if (FileSystem.Data.FileExists(databaseName + ".json"))
+            {
+                Database.Current = Deserialize(FileSystem.Data.ReadAllText(databaseName + ".json"));
+            }
+            else
+            {
+                Database newDatabase = new Database(databaseName);
+                newDatabase.Save();
+                Database.Current = newDatabase;
+            }
         }
 
         public string Serialize()
