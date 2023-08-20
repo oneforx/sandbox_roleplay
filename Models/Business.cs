@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Roleplay.System;
 
 #nullable enable
 namespace Roleplay.Models
@@ -83,9 +84,9 @@ namespace Roleplay.Models
             return database.LinkBusinessMember(businessMember, this);
         }
 
-        public void SetPersonOwner(Database database, Person person)
+        public void SetPersonOwner(Person person)
         {
-            database.LinkPersonToBusiness(person, this);
+            Database.Current.LinkPersonToBusiness(person, this);
         }
 
 

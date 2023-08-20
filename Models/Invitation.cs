@@ -31,16 +31,17 @@ namespace Roleplay.Models
 
 		public InvitationStatus Status { get; set; }
 
-        public Invitation() : base("invitation") { }
+		public Invitation(Guid fromId, Guid toId, Guid forId, InvitationType invitationType) : base("invitation")
+		{
+			FromId = fromId;
+			ToId = toId;
+			ForId = forId;
+			InvitationType = invitationType;
+			Status = InvitationStatus.Waiting;
+		}
 
-        public Invitation(Guid fromId, Guid toId, Guid forId, InvitationType invitationType) : base("invitation")
-        {
-            FromId = fromId;
-            ToId = toId;
-            ForId = forId;
-            InvitationType = invitationType;
-            Status = InvitationStatus.Waiting;
-        }
+		public Invitation() : base("invitation") { }
+
 
     }
 }

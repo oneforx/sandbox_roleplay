@@ -6,9 +6,9 @@ using Roleplay.Models;
 using Sandbox;
 
 #nullable enable
-namespace Roleplay
+namespace Roleplay.System
 {
-    public partial class Database
+    public partial class Database : BaseNetworkable
     {
         public Dictionary<Guid, Business> Businesses { get; set; } = new Dictionary<Guid, Business>();
 
@@ -40,8 +40,8 @@ namespace Roleplay
 
 			if (ownerPerson != null)
             {
-				LinkPersonHasBusiness linkPersonHasBusiness = this.LinkPersonToBusiness(ownerPerson, newBusiness);
 				Event.Run(Events.Business.Server.PersonCreatedBusinessID, ownerPerson, business);
+                ResponseOnSelfJoin(business.Serialize());
                 return newBusiness;
             }
             else
@@ -50,11 +50,18 @@ namespace Roleplay
             }
         }
 
+        [ClientRpc]
+        public static void ResponseOnSelfJoin(string businessData)
+		{
+			Event.Run(Events.Business.Client.OnSelfJoinID, Business.Deserialize<Business>(businessData));
+		}
+
 		public Business CreateBusinessWithOwner(Business business, Person owner)
 		{
 			Business newBusiness = this.CreateBusiness(business);
 			this.LinkPersonToBusiness(owner, newBusiness);
 			Event.Run(Events.Business.Server.PersonJoinedBusinessID, owner, business);
+			ResponseOnSelfJoin(business.Serialize());
 			return newBusiness;
 		}
 
@@ -63,19 +70,24 @@ namespace Roleplay
             return this.Businesses[businessId];
         }
 
-        public Business? GetBusinessByOwnerId(Guid ownerId)
+        public Dictionary<Guid, Business> GetBusinessByOwnerId(Guid ownerId)
         {
+            Dictionary<Guid, Business> businesses = new();
+            
             foreach (var personHasBusiness in this.LinkPersonHasBusinesses)
             {
                 if (personHasBusiness.PersonId == ownerId)
                 {
-                    return this.Businesses[personHasBusiness.BusinessId];
+                    Business? businessFound = this.GetBusinessById(personHasBusiness.BusinessId);
+                    if (businessFound == null) throw new Exception("The person is linked to a non-existent business");
+                    businesses.Add(personHasBusiness.BusinessId, businessFound);
                 }
             }
-            return null;
+
+            return businesses;
         }
 
-        public Dictionary<Guid, Business> GetAllBusiness()
+        public IDictionary<Guid, Business> GetAllBusiness()
         {
             return this.Businesses;
         }
@@ -143,7 +155,7 @@ namespace Roleplay
             return this.Jobs[jobId];
         }
 
-        public Dictionary<Guid, Job> GetAllBusinessJobs()
+        public IDictionary<Guid, Job> GetAllBusinessJobs()
         {
             return this.Jobs;
         }

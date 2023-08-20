@@ -2,18 +2,21 @@ using Sandbox;
 using System.Collections.Generic;
 using Roleplay.Map;
 using Roleplay.Engine;
+using Roleplay.System;
 
 namespace Roleplay
 {
     public partial class RoleplayGameManager : GameManager
 	{
-        public Database Database { get; set; }
-
 		public RoleplayGameManager(string databaseName) : base()
         {   
             if (Game.IsServer)
             {
-                Database = Database.Load(databaseName);
+                Database.Load(databaseName);
+            }
+            else
+            {
+                Database.Current = new Database(databaseName);
             }
             Event.Register(this);
         }
@@ -23,7 +26,7 @@ namespace Roleplay
         {
             if (Game.IsServer)
             {
-                Database.Save();
+                Database.Current.Save();
             }
             base.Shutdown();
         }

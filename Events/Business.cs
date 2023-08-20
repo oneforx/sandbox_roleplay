@@ -54,7 +54,7 @@ namespace Roleplay.Events
 			/// </code>
 			/// </example>
 			/// </summary>
-			[MethodArguments(typeof (Business))]
+			[MethodArguments(typeof (Models.Business))]
 			public class SelfJoin : EventAttribute
 			{
 				public SelfJoin() : base(OnSelfJoinID)

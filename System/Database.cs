@@ -7,15 +7,19 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Sandbox;
 
-namespace Roleplay
+namespace Roleplay.System
 {
 	public partial class Database
     {
+
+        public static Database Current { get; set; }
+
         public string Name { get; set; }
 
 		public Database(string name)
         {
             Name = name;
+            Current = this;
         }
 
 
@@ -25,20 +29,9 @@ namespace Roleplay
             return JsonSerializer.Deserialize<Database>(databaseData, new JsonSerializerOptions { IncludeFields = true, WriteIndented = true });
         }
 
-        public static Database Load(string databaseName)
+        public static void Load(string databaseName)
         {
-            if (FileSystem.Data.FileExists(databaseName + ".json"))
-            {
-                return Deserialize(FileSystem.Data.ReadAllText(databaseName + ".json"));
-            }
-            else
-            {
-                Database businessRegistry = new(databaseName);
-
-                businessRegistry.Save();
-
-                return businessRegistry;
-            }
+            Database.Current = Deserialize(FileSystem.Data.ReadAllText(databaseName + ".json"));
         }
 
         public string Serialize()
@@ -49,6 +42,24 @@ namespace Roleplay
         public void Save()
         {
             FileSystem.Data.WriteAllText(Name + ".json", this.Serialize());
+        }
+
+        [GameEvent.Server.ClientJoined]
+        public static void OnClientJoined(ClientJoinedEvent ev)
+        {
+            CallDatabaseInitEvent(To.Single(ev.Client), Database.Current.Serialize());
+        }
+
+        [ClientRpc]
+        public static void CallDatabaseInitEvent(string databaseData)
+        {
+            Event.Run(Events.Database.Client.InitID, Database.Deserialize(databaseData));
+        }
+
+        [Events.Database.Client.Init]
+        public static void OnClientDatabaseInit(Roleplay.System.Database database)
+        {
+            Database.Current = database;
         }
     }
 }

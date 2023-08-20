@@ -1,18 +1,26 @@
-﻿using System;
+﻿using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Roleplay
 {
-    public class Table
-    {
+    public partial class Table : BaseNetworkable
+	{
+        [Net]
         public Guid Id { get; set; } = Guid.NewGuid();
+        
+        [Net]
         public string TableName { get; set; }
+        
+        [Net]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        [Net]
         public DateTime? RemovedAt { get; set; }
 
         [JsonIgnore]
@@ -40,5 +48,15 @@ namespace Roleplay
         {
             RemovedAt = DateTime.Now;
         }
-    }
+
+		public static T Deserialize<T>(string businessData)
+		{
+			return Json.Deserialize<T>(businessData);
+		}
+
+		public string Serialize()
+		{
+			return Json.Serialize(this);
+		}
+	}
 }

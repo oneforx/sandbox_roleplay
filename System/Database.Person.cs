@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Roleplay.Models;
 
-namespace Roleplay
+namespace Roleplay.System
 {
 #nullable enable
     public partial class Database

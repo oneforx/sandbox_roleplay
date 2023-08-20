@@ -54,5 +54,6 @@ namespace Roleplay.Models
         {
             Log.Info(action);
         }
+
     }
 }

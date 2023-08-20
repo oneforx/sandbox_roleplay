@@ -13,12 +13,24 @@ namespace Roleplay.Events
 		public static class Client
 		{
 
-			public const string EmbarkID = "business.client.embark";
+			public const string InitID = "business.client.init";
 
-			[MethodArguments(typeof(string))]
-			public class EmbarkAttribute : EventAttribute
+			[MethodArguments(typeof(Roleplay.System.Database))]
+			public class InitAttribute : EventAttribute
 			{
-				public EmbarkAttribute() : base(EmbarkID)
+				public InitAttribute() : base(InitID)
+				{
+
+				}
+			}
+
+
+			public const string OnTableUpdatedID = "business.client.table_updated";
+
+			[MethodArguments(typeof(Database))]
+			public class OnTableUpdatedAttribute : EventAttribute
+			{
+				public OnTableUpdatedAttribute() : base(OnTableUpdatedID)
 				{
 
 				}
