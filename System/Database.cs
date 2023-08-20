@@ -3,20 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Sandbox;
 
 namespace Roleplay
 {
-    public partial class Database
+	public partial class Database
     {
         public string Name { get; set; }
-        
 
-        public Database(string name)
+		public Database(string name)
         {
             Name = name;
         }
+
+
 
         public static Database Deserialize(string databaseData)
         {
@@ -27,7 +29,6 @@ namespace Roleplay
         {
             if (FileSystem.Data.FileExists(databaseName + ".json"))
             {
-
                 return Deserialize(FileSystem.Data.ReadAllText(databaseName + ".json"));
             }
             else

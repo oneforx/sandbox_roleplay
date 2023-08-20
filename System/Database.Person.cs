@@ -46,17 +46,21 @@ namespace Roleplay
 
         #endregion
     
-        public bool CreateLinkPersonToBusiness(Person person, Business business)
+        public LinkPersonHasBusiness LinkPersonToBusiness(Person person, Business business)
         {
             LinkPersonHasBusiness? linkPersonHasBusiness = GetLinkPersonHasBusiness(person, business);
             if (linkPersonHasBusiness == null)
             {
-                this.LinkPersonHasBusinesses.Add(new LinkPersonHasBusiness(person, business));
-                return true;
+                linkPersonHasBusiness = new LinkPersonHasBusiness(person, business);
+
+				this.LinkPersonHasBusinesses.Add(linkPersonHasBusiness);
+
+				return linkPersonHasBusiness;
             }
 
-            return false;
+            return linkPersonHasBusiness;
         }
+
 
         public LinkPersonHasBusiness? GetLinkPersonHasBusiness(Person person, Business business)
         {
@@ -69,5 +73,6 @@ namespace Roleplay
             }
             return null;
         }
+
     }
 }

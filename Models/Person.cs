@@ -24,7 +24,7 @@ namespace Roleplay.Models
 
         public void SetOwnerBusiness(Database database, Business business)
         {
-            database.CreateLinkPersonToBusiness(this, business);
+            database.LinkPersonToBusiness(this, business);
         }
     }
 }

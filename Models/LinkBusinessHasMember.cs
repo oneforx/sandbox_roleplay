@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Roleplay.Models
@@ -12,12 +13,14 @@ namespace Roleplay.Models
 
         public Guid BusinessId { get; set; }
 
+
         public LinkBusinessHasMember(BusinessMember businessMember, Business business)
         {
             MemberId = businessMember.Id;
             BusinessId = business.Id;
         }
 
+        [JsonConstructor]
         public LinkBusinessHasMember(Guid memberId, Guid businessId)
         {
             MemberId = memberId;

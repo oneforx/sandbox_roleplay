@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Roleplay.Models;
+using Sandbox;
 
 #nullable enable
 namespace Roleplay
@@ -19,7 +20,6 @@ namespace Roleplay
 
         #region [CRUD] Business
 
-
         public Business CreateBusiness(Business business)
         {
             if (business == null)
@@ -33,7 +33,32 @@ namespace Roleplay
             return this.Businesses[business.Id];
         }
 
-        public Business? GetBusinessById(Guid businessId)
+        public Business CreateBusinessWithOwner(Business business, Guid ownerId)
+        {
+            Business newBusiness = this.CreateBusiness(business);
+            Person? ownerPerson = GetPersonById(ownerId);
+
+			if (ownerPerson != null)
+            {
+				LinkPersonHasBusiness linkPersonHasBusiness = this.LinkPersonToBusiness(ownerPerson, newBusiness);
+				Event.Run(Events.Business.Server.PersonCreatedBusinessID, ownerPerson, business);
+                return newBusiness;
+            }
+            else
+            {
+                throw new Exception("Could not find the Person with ownerId");
+            }
+        }
+
+		public Business CreateBusinessWithOwner(Business business, Person owner)
+		{
+			Business newBusiness = this.CreateBusiness(business);
+			this.LinkPersonToBusiness(owner, newBusiness);
+			Event.Run(Events.Business.Server.PersonJoinedBusinessID, owner, business);
+			return newBusiness;
+		}
+
+		public Business? GetBusinessById(Guid businessId)
         {
             return this.Businesses[businessId];
         }

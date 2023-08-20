@@ -16,9 +16,10 @@ namespace Roleplay.Models
 
 	public class Business : Table
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public Business(string name) : base("business")
+
+		public Business(string name) : base("business")
         {
             Name = name;
         }
@@ -70,6 +71,10 @@ namespace Roleplay.Models
         {
             BusinessMember businessMember = database.CreateBusinessMember(newBusinessMember, this);
             LinkMember(database, businessMember);
+            Person? memberPerson = database.GetPersonById(businessMember.PersonId);
+            if (memberPerson != null)
+            {
+            }
             return businessMember;
         }
 
@@ -80,7 +85,7 @@ namespace Roleplay.Models
 
         public void SetPersonOwner(Database database, Person person)
         {
-            database.CreateLinkPersonToBusiness(person, this);
+            database.LinkPersonToBusiness(person, this);
         }
 
 

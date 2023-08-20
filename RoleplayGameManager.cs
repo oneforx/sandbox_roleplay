@@ -6,40 +6,18 @@ using Roleplay.Engine;
 namespace Roleplay
 {
     public partial class RoleplayGameManager : GameManager
-    {
-        public static Roleplay.Database Database { get; private set; }
+	{
+        public Database Database { get; set; }
 
-        public RoleplayGameManager(string mapName) : base()
-        { 
-            if(Game.IsServer)
+		public RoleplayGameManager(string databaseName) : base()
+        {   
+            if (Game.IsServer)
             {
-				Database = Database.Load("backup");
+                Database = Database.Load(databaseName);
             }
-
-            
-
             Event.Register(this);
         }
 
-		public override void OnClientActive(IClient client)
-		{
-			base.OnClientActive(client);
-
-            OnClientSetToActive(Database.Serialize());
-		}
-
-        [ClientRpc]
-        public void OnClientSetToActive(string data)
-        {
-            Database = Database.Deserialize(data);
-            Log.Info("Database");
-        }
-
-		[Roleplay.Events.Database.Client.Embark]
-        public void Embarking(string data)
-        {
-            Log.Info(data);
-        }
 
         public override void Shutdown()
         {

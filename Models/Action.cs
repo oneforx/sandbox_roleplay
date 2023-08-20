@@ -32,6 +32,11 @@ namespace Roleplay.Models
     {
         public string Name { get; set; }
 
+        public Action() : base("action")
+        {
+
+        }
+
         public Action(string name) : base("action")
         {
             Name = name;

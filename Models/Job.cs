@@ -10,7 +10,12 @@ namespace Roleplay.Models
     public class Job : Table
     {
         public string Name { get; set; }
-        public Job(string name) : base("business_job")
+
+        public Job() : base("job") {
+            Event.Register(this);
+        }
+
+        public Job(string name) : base("job")
         {
             Event.Register(this);
             Name = name;
