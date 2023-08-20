@@ -12,6 +12,9 @@ namespace Roleplay.System
 	public partial class Database
     {
 
+        [JsonIgnore]
+        public bool ReadyOnClient = false;
+
         public static Database Current { get; set; }
 
         public string Name { get; set; }
@@ -22,11 +25,17 @@ namespace Roleplay.System
             Current = this;
         }
 
+        public void GetTableTypeList()
+        {
 
+        }
 
         public static Database Deserialize(string databaseData)
-        {
-            return JsonSerializer.Deserialize<Database>(databaseData, new JsonSerializerOptions { IncludeFields = true, WriteIndented = true });
+		{
+			JsonSerializerOptions options = new();
+			options.IncludeFields = true;
+			options.WriteIndented = true;
+			return JsonSerializer.Deserialize<Database>(databaseData, options);
         }
 
         public static void Load(string databaseName)
@@ -45,7 +54,10 @@ namespace Roleplay.System
 
         public string Serialize()
         {
-            return JsonSerializer.Serialize<Database>(this, new JsonSerializerOptions { IncludeFields = true, WriteIndented = true });
+            JsonSerializerOptions options = new();
+            options.IncludeFields = true;
+            options.WriteIndented = true;
+            return JsonSerializer.Serialize<Database>(this, options);
         }
 
         public void Save()
@@ -69,6 +81,7 @@ namespace Roleplay.System
         public static void OnClientDatabaseInit(Roleplay.System.Database database)
         {
             Database.Current = database;
+            Database.Current.ReadyOnClient = true;
         }
     }
 }

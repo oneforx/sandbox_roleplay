@@ -9,18 +9,15 @@ using System.Threading.Tasks;
 
 namespace Roleplay
 {
-    public partial class Table : BaseNetworkable
+    public partial class Table
 	{
-        [Net]
         public Guid Id { get; set; } = Guid.NewGuid();
         
-        [Net]
         public string TableName { get; set; }
-        
-        [Net]
+
+        public string TableType { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        [Net]
         public DateTime? RemovedAt { get; set; }
 
         [JsonIgnore]
@@ -34,9 +31,15 @@ namespace Roleplay
         public Table(string tableName) 
         {
             this.TableName = tableName;
-        }
+		}
 
-        public Table(Guid id, string tableName, DateTime createdAt, DateTime removedAt )
+		public Table(string tableName, string tableType)
+		{
+			this.TableName = tableName;
+            this.TableType = tableType;
+		}
+
+		public Table(Guid id, string tableName, DateTime createdAt, DateTime removedAt )
         {
             this.Id = id;
             this.TableName = tableName;
@@ -54,9 +57,11 @@ namespace Roleplay
 			return Json.Deserialize<T>(businessData);
 		}
 
+
 		public string Serialize()
 		{
 			return Json.Serialize(this);
 		}
 	}
+
 }

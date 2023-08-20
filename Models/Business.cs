@@ -20,7 +20,7 @@ namespace Roleplay.Models
         public string? Name { get; set; }
 
 
-		public Business(string name) : base("business")
+		public Business(string name) : base("business", "Business")
         {
             Name = name;
         }
