@@ -1,14 +1,14 @@
-﻿using Roleplay.Business;
-using Sandbox;
+﻿using Sandbox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Roleplay.Models;
 
 namespace Roleplay.Engine
 {
-    public class TakeItem : Schemas.Action
+    public class TakeItem : Models.Action
     {
         public string ItemName { get; set; } = null;
 

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Roleplay.Schemas
+namespace Roleplay.Models
 {
-    internal class MapProperty
+    public class PhoneHasContact
     {
+        public Guid Phone;
     }
 }

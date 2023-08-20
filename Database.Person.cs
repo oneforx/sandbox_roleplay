@@ -1,34 +1,34 @@
-﻿using Roleplay.Schemas;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Roleplay.Models;
 
 namespace Roleplay
 {
-    #nullable enable
+#nullable enable
     public partial class Database
     {
-        public Dictionary<Guid, Schemas.Person> Persons { get; set; } = new();
-        public List<Schemas.LinkPersonHasBusiness> LinkPersonHasBusinesses { get; set; } = new List<Schemas.LinkPersonHasBusiness>();
+        public Dictionary<Guid, Person> Persons { get; set; } = new();
+        public List<LinkPersonHasBusiness> LinkPersonHasBusinesses { get; set; } = new List<LinkPersonHasBusiness>();
 
-        public List<Schemas.LinkPersonHasInvitation> LinkPersonHasInvitations { get; set; } = new List<Schemas.LinkPersonHasInvitation>();
+        public List<LinkPersonHasInvitation> LinkPersonHasInvitations { get; set; } = new List<LinkPersonHasInvitation>();
 
         #region [CRUD] Person
 
-        public Schemas.Person CreatePerson(Person person)
+        public Person CreatePerson(Person person)
         {
             this.Persons[person.Id] = person;
             return this.Persons[person.Id];
         }
 
-        public Schemas.Person? GetPersonById(Guid id)
+        public Person? GetPersonById(Guid id)
         {
             return this.Persons[id];
         }
 
-        public Schemas.Person? GetPersonBySteamId(long id)
+        public Person? GetPersonBySteamId(long id)
         {
             foreach (var person in this.Persons)
             {
@@ -46,7 +46,7 @@ namespace Roleplay
 
         #endregion
     
-        public bool CreateLinkPersonToBusiness(Schemas.Person person, Schemas.Business business)
+        public bool CreateLinkPersonToBusiness(Person person, Business business)
         {
             LinkPersonHasBusiness? linkPersonHasBusiness = GetLinkPersonHasBusiness(person, business);
             if (linkPersonHasBusiness == null)
@@ -58,7 +58,7 @@ namespace Roleplay
             return false;
         }
 
-        public LinkPersonHasBusiness? GetLinkPersonHasBusiness(Schemas.Person person, Schemas.Business business)
+        public LinkPersonHasBusiness? GetLinkPersonHasBusiness(Person person, Business business)
         {
             foreach(var linkPersonToBusiness in this.LinkPersonHasBusinesses)
             {

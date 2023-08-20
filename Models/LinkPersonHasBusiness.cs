@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Roleplay.Schemas
+namespace Roleplay.Models
 {
     public class LinkPersonHasBusiness
     {
@@ -14,8 +14,8 @@ namespace Roleplay.Schemas
 
         public LinkPersonHasBusiness(Person person, Business business)
         {
-            this.PersonId = person.Id;
-            this.BusinessId = business.Id;
+            PersonId = person.Id;
+            BusinessId = business.Id;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Roleplay.Bank
+namespace Roleplay.Models
 {
     public class Bank
     {
@@ -11,9 +11,9 @@ namespace Roleplay.Bank
         public List<BankAccount> Accounts;
         public Bank(long id, string title)
         {
-            this.Id = id;
-            this.Title = title;
-            this.Accounts = new();
+            Id = id;
+            Title = title;
+            Accounts = new();
         }
     }
 }

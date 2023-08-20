@@ -3,47 +3,49 @@ using System.Collections.Generic;
 using Roleplay.Map;
 using Roleplay.Engine;
 
-#nullable enable
 namespace Roleplay
 {
     public partial class RoleplayGameManager : GameManager
     {
-        public static Database RoleplayDatabase { get; private set; }
+        public static Roleplay.Database Database { get; private set; }
 
-        public RoleplayGameManager(string mapName) 
+        public RoleplayGameManager(string mapName) : base()
         { 
             if(Game.IsServer)
             {
-                RoleplayDatabase = Database.Load("backup");
+				Database = Database.Load("backup");
             }
+
+            
+
+            Event.Register(this);
         }
 
-        /*[RoleplayGameEvent.Common.ClientDidAction]
-        public static void ListenAction(IAction 
-        , IClient client)
+		public override void OnClientActive(IClient client)
+		{
+			base.OnClientActive(client);
+
+            OnClientSetToActive(Database.Serialize());
+		}
+
+        [ClientRpc]
+        public void OnClientSetToActive(string data)
         {
-            Log.Info(Game.IsServer);
-            if (Game.IsClient) return;
+            Database = Database.Deserialize(data);
+            Log.Info("Database");
+        }
 
-            foreach (Business.Business business in LegalBusinessRegistry.Businesses)
-            {
-                BusinessMember businessMember = business.GetMemberById(client.SteamId);
-
-                if (businessMember == null) return;
-
-                foreach (var activeJob in businessMember.ActiveJobs)
-                {
-
-                }
-            }
-
-        }*/
+		[Roleplay.Events.Database.Client.Embark]
+        public void Embarking(string data)
+        {
+            Log.Info(data);
+        }
 
         public override void Shutdown()
         {
             if (Game.IsServer)
             {
-                RoleplayDatabase.Save();
+                Database.Save();
             }
             base.Shutdown();
         }

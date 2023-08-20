@@ -1,31 +1,30 @@
-﻿using Roleplay.Schemas;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Roleplay.Models;
 
 #nullable enable
 namespace Roleplay
 {
     public partial class Database
     {
-        public Dictionary<Guid, Schemas.Business> Businesses { get; set; } = new Dictionary<Guid, Schemas.Business>();
+        public Dictionary<Guid, Business> Businesses { get; set; } = new Dictionary<Guid, Business>();
 
-        public Dictionary<Guid, Schemas.BusinessJob> BusinessJobs { get; set; } = new Dictionary<Guid, Schemas.BusinessJob>();
+        public Dictionary<Guid, Job> Jobs { get; set; } = new Dictionary<Guid, Job>();
 
-        public Dictionary<Guid, Schemas.BusinessMember> BusinessMembers { get; set; } = new Dictionary<Guid, Schemas.BusinessMember>();
+        public Dictionary<Guid, BusinessMember> BusinessMembers { get; set; } = new Dictionary<Guid, BusinessMember>();
 
-        public Dictionary<Guid, Schemas.BusinessTask> BusinessTasks { get; set; } = new Dictionary<Guid, Schemas.BusinessTask>();
+        public Dictionary<Guid, Task> Tasks { get; set; } = new Dictionary<Guid, Task>();
 
         #region [CRUD] Business
-        
-        
-        public Schemas.Business CreateBusiness(Schemas.Business business)
+
+
+        public Business CreateBusiness(Business business)
         {
             if (business == null)
             {
-                business = new Schemas.Business(Guid.NewGuid().ToString());
+                business = new Business(Guid.NewGuid().ToString());
                 this.Businesses[business.Id] = business;
                 return this.Businesses[business.Id];
             }
@@ -34,21 +33,33 @@ namespace Roleplay
             return this.Businesses[business.Id];
         }
 
-        public Schemas.Business? GetBusinessById(Guid businessId)
+        public Business? GetBusinessById(Guid businessId)
         {
             return this.Businesses[businessId];
         }
 
-        public Dictionary<Guid, Schemas.Business> GetAllBusiness()
+        public Business? GetBusinessByOwnerId(Guid ownerId)
+        {
+            foreach (var personHasBusiness in this.LinkPersonHasBusinesses)
+            {
+                if (personHasBusiness.PersonId == ownerId)
+                {
+                    return this.Businesses[personHasBusiness.BusinessId];
+                }
+            }
+            return null;
+        }
+
+        public Dictionary<Guid, Business> GetAllBusiness()
         {
             return this.Businesses;
         }
 
-        public Dictionary<Guid, Schemas.Business> GetAllBusinessByPersonId(Guid personId)
+        public Dictionary<Guid, Business> GetAllBusinessByPersonId(Guid personId)
         {
-            Dictionary<Guid, Schemas.Business> businesses = new();
+            Dictionary<Guid, Business> businesses = new();
 
-            foreach (Schemas.LinkPersonHasBusiness linkPersonHasBusiness in this.LinkPersonHasBusinesses)
+            foreach (LinkPersonHasBusiness linkPersonHasBusiness in this.LinkPersonHasBusinesses)
             {
                 if (linkPersonHasBusiness.PersonId == personId && this.Businesses.ContainsKey(linkPersonHasBusiness.BusinessId))
                 {
@@ -61,7 +72,7 @@ namespace Roleplay
 
         public bool SoftDeleteBusinessById(Guid businessId)
         {
-            Schemas.Business? business = GetBusinessById(businessId);
+            Business? business = GetBusinessById(businessId);
             if (business != null)
             {
                 business.SoftDelete();
@@ -87,40 +98,40 @@ namespace Roleplay
 
         #endregion
 
-        #region [CRUD] BusinessJob
+        #region [CRUD] Job
 
-        public Schemas.BusinessJob CreateJob(BusinessJob businessJob)
+        public Job CreateJob(Job businessJob)
         {
-            this.BusinessJobs.Add(businessJob.Id, businessJob);
-            return this.BusinessJobs[businessJob.Id];
+            this.Jobs.Add(businessJob.Id, businessJob);
+            return this.Jobs[businessJob.Id];
         }
 
-        public Schemas.LinkBusinessHasJob LinkBusinessToJob(Guid businessId, Guid jobId)
+        public LinkBusinessHasJob LinkBusinessToJob(Guid businessId, Guid jobId)
         {
             LinkBusinessHasJob linkBusinessHasJob = new(businessId, jobId);
             this.LinkBusinessHasJobs.Add(linkBusinessHasJob);
             return linkBusinessHasJob;
         }
 
-        public Schemas.BusinessJob? GetBusinessJobById(Guid jobId)
+        public Job? GetBusinessJobById(Guid jobId)
         {
-            return this.BusinessJobs[jobId];
+            return this.Jobs[jobId];
         }
 
-        public Dictionary<Guid, Schemas.BusinessJob> GetAllBusinessJobs()
+        public Dictionary<Guid, Job> GetAllBusinessJobs()
         {
-            return this.BusinessJobs;
+            return this.Jobs;
         }
 
-        public Dictionary<Guid, Schemas.BusinessJob> GetAllBusinessJobsByBusinessId(Guid businessId)
+        public Dictionary<Guid, Job> GetAllBusinessJobsByBusinessId(Guid businessId)
         {
-            Dictionary<Guid, Schemas.BusinessJob> businessJobs = new();
+            Dictionary<Guid, Job> businessJobs = new();
 
-            foreach (Schemas.LinkBusinessHasJob linkBusinessHasJob in this.LinkBusinessHasJobs)
+            foreach (LinkBusinessHasJob linkBusinessHasJob in this.LinkBusinessHasJobs)
             {
-                if (linkBusinessHasJob.BusinessId == businessId && this.BusinessJobs.ContainsKey(linkBusinessHasJob.JobId))
+                if (linkBusinessHasJob.BusinessId == businessId && this.Jobs.ContainsKey(linkBusinessHasJob.JobId))
                 {
-                    businessJobs[linkBusinessHasJob.JobId] = this.BusinessJobs[linkBusinessHasJob.JobId];
+                    businessJobs[linkBusinessHasJob.JobId] = this.Jobs[linkBusinessHasJob.JobId];
                 }
             }
 
@@ -129,9 +140,9 @@ namespace Roleplay
     
         public bool DeleteBusinessJobById(Guid jobId)
         {
-            if (!this.BusinessJobs.ContainsKey(jobId)) return false;
+            if (!this.Jobs.ContainsKey(jobId)) return false;
 
-            this.BusinessJobs.Remove(jobId);
+            this.Jobs.Remove(jobId);
 
             this.LinkBusinessJobHasTasks.ForEach((linkBusinessJobToTask) => DeleteBusinessTaskById(linkBusinessJobToTask.TaskId));
 
@@ -144,25 +155,37 @@ namespace Roleplay
 
         #region [CRUD] BusinessTask
 
-        public Schemas.BusinessTask? GetBusinessTaskById(Guid taskId)
+        public Task CreateTask(Task businessTask)
         {
-            return this.BusinessTasks[taskId];
+            this.Tasks[businessTask.Id] = businessTask;
+            return this.Tasks[businessTask.Id];
+		}
+		public LinkJobHasTask LinkBusinessTaskToJob(Guid taskId, Guid jobId)
+		{
+            LinkJobHasTask linkBusinessToTask = new LinkJobHasTask(jobId, taskId);
+            this.LinkBusinessJobHasTasks.Add(linkBusinessToTask);
+            return linkBusinessToTask;
+		}
+
+		public Task? GetBusinessTaskById(Guid taskId)
+        {
+            return this.Tasks[taskId];
         }
 
-        public Dictionary<Guid, Schemas.BusinessTask> GetAllBusinessTasks()
+        public Dictionary<Guid, Task> GetAllBusinessTasks()
         {
-            return this.BusinessTasks;
+            return this.Tasks;
         }
 
-        public Dictionary<Guid, Schemas.BusinessTask> GetAllBusinessTasksByBusinessJobId(Guid jobId)
+        public Dictionary<Guid, Task> GetAllBusinessTasksByBusinessJobId(Guid jobId)
         {
-            Dictionary<Guid, Schemas.BusinessTask> businessTasks = new();
+            Dictionary<Guid, Task> businessTasks = new();
 
-            foreach (Schemas.LinkBusinessJobHasTask linkBusinessJobHasTask in this.LinkBusinessJobHasTasks)
+            foreach (LinkJobHasTask linkJobHasTask in this.LinkBusinessJobHasTasks)
             {
-                if (linkBusinessJobHasTask.JobId == jobId && this.BusinessTasks.ContainsKey(linkBusinessJobHasTask.TaskId))
+                if (linkJobHasTask.JobId == jobId && this.Tasks.ContainsKey(linkJobHasTask.TaskId))
                 {
-                    businessTasks[linkBusinessJobHasTask.TaskId] = this.BusinessTasks[linkBusinessJobHasTask.TaskId];
+                    businessTasks[linkJobHasTask.TaskId] = this.Tasks[linkJobHasTask.TaskId];
                 }
             }
 
@@ -170,18 +193,18 @@ namespace Roleplay
         }
 
         // Get all BusinessTask of a Business
-        public Dictionary<Guid, Schemas.BusinessTask> GetAllBusinessTasksByBusinessId(Guid businessId)
+        public Dictionary<Guid, Task> GetAllBusinessTasksByBusinessId(Guid businessId)
         {
-            Dictionary<Guid, Schemas.BusinessTask> businessTasks = new Dictionary<Guid, Schemas.BusinessTask>();
+            Dictionary<Guid, Task> businessTasks = new Dictionary<Guid, Task>();
 
             foreach (var linkBusinessJobToTask in this.LinkBusinessJobHasTasks)
             {
                 var linkedJob = this.LinkBusinessHasJobs.Find(linkBusinessToJob =>
                     linkBusinessToJob.BusinessId == businessId && linkBusinessToJob.JobId == linkBusinessJobToTask.JobId);
 
-                if (linkedJob != null && this.BusinessTasks.ContainsKey(linkBusinessJobToTask.TaskId))
+                if (linkedJob != null && this.Tasks.ContainsKey(linkBusinessJobToTask.TaskId))
                 {
-                    businessTasks[linkBusinessJobToTask.TaskId] = this.BusinessTasks[linkBusinessJobToTask.TaskId];
+                    businessTasks[linkBusinessJobToTask.TaskId] = this.Tasks[linkBusinessJobToTask.TaskId];
                 }
             }
 
@@ -191,9 +214,9 @@ namespace Roleplay
 
         public bool DeleteBusinessTaskById(Guid taskId)
         {
-            if (!this.BusinessTasks.ContainsKey(taskId)) return false;
+            if (!this.Tasks.ContainsKey(taskId)) return false;
 
-            this.BusinessTasks.Remove(taskId);
+            this.Tasks.Remove(taskId);
 
             return true;
         }
@@ -202,37 +225,37 @@ namespace Roleplay
 
         #region [CRUD] BusinessMember
 
-        public Schemas.BusinessMember CreateBusinessMember(Schemas.BusinessMember businessMember, Schemas.Business business)
+        public BusinessMember CreateBusinessMember(BusinessMember businessMember, Business business)
         {
             this.BusinessMembers[businessMember.Id] = businessMember;
 
             return this.BusinessMembers[businessMember.Id];
         }
 
-        public Schemas.LinkBusinessHasMember LinkBusinessMember(Schemas.BusinessMember businessMember, Schemas.Business business)
+        public LinkBusinessHasMember LinkBusinessMember(BusinessMember businessMember, Business business)
         {
             LinkBusinessHasMember newLinkBusinessHasMember = new LinkBusinessHasMember(businessMember, business);
             this.LinkBusinessHasMembers.Add(newLinkBusinessHasMember);
             return newLinkBusinessHasMember;
         }
 
-        public Schemas.BusinessMember? GetBusinessMemberById(Guid taskId)
+        public BusinessMember? GetBusinessMemberById(Guid taskId)
         {
             return this.BusinessMembers[taskId];
         }
 
-        public Dictionary<Guid, Schemas.BusinessMember> GetAllBusinessMembers()
+        public Dictionary<Guid, BusinessMember> GetAllBusinessMembers()
         {
             return this.BusinessMembers;
         }
 
-        public List<Schemas.BusinessMember> GetAllBusinessMembersByBusinessJobId(Guid jobId)
+        public List<BusinessMember> GetAllBusinessMembersByBusinessJobId(Guid jobId)
         {
-            List<Schemas.BusinessMember> businessMembers = new();
+            List<BusinessMember> businessMembers = new();
 
-            Dictionary<Guid, Schemas.BusinessMember> allMembers = GetAllBusinessMembers();
+            Dictionary<Guid, BusinessMember> allMembers = GetAllBusinessMembers();
 
-            foreach (Schemas.LinkBusinessMemberHasJob linkBusinessMemberHasJob in this.LinkBusinessMemberHasJobs)
+            foreach (LinkBusinessMemberHasJob linkBusinessMemberHasJob in this.LinkBusinessMemberHasJobs)
             {
                 if (linkBusinessMemberHasJob.JobId == jobId && allMembers.ContainsKey(linkBusinessMemberHasJob.MemberId))
                 {
@@ -244,9 +267,9 @@ namespace Roleplay
         }
 
         // Get all BusinessTask of a Business
-        public Dictionary<Guid, Schemas.BusinessMember> GetAllBusinessMembersByBusinessId(Guid businessId)
+        public Dictionary<Guid, BusinessMember> GetAllBusinessMembersByBusinessId(Guid businessId)
         {
-            Dictionary<Guid, Schemas.BusinessMember> businessMembers = new Dictionary<Guid, Schemas.BusinessMember>();
+            Dictionary<Guid, BusinessMember> businessMembers = new Dictionary<Guid, BusinessMember>();
 
             foreach (var linkBusinessToMember in this.LinkBusinessHasMembers)
             {

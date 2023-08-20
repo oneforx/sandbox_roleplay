@@ -6,9 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 #nullable enable
-namespace Roleplay.Schemas
+namespace Roleplay.Models
 {
-    public class Business : Table
+	public enum LeftReason
+	{
+		Normal,
+		Bann
+	}
+
+	public class Business : Table
     {
         public string Name { get; set; }
 
@@ -18,26 +24,26 @@ namespace Roleplay.Schemas
         }
 
 
-        public BusinessJob CreateJob(Database database, BusinessJob businessJobTemplate)
+        public Job CreateJob(Database database, Job businessJobTemplate)
         {
-            BusinessJob businessJob = database.CreateJob(businessJobTemplate);
-            database.LinkBusinessToJob(this.Id, businessJob.Id);
+            Job businessJob = database.CreateJob(businessJobTemplate);
+            database.LinkBusinessToJob(Id, businessJob.Id);
             return businessJob;
         }
 
-        public Dictionary<Guid, BusinessJob> GetAllJobs(Database database)
+        public Dictionary<Guid, Job> GetAllJobs(Database database)
         {
-            return database.GetAllBusinessJobsByBusinessId(this.Id);
+            return database.GetAllBusinessJobsByBusinessId(Id);
         }
 
         public Dictionary<Guid, BusinessMember> GetAllMembers(Database database)
         {
-            return database.GetAllBusinessMembersByBusinessId(this.Id);
+            return database.GetAllBusinessMembersByBusinessId(Id);
         }
 
         public BusinessMember? GetMemberByPersonId(Database database, Guid personId)
         {
-            foreach (var businessMember in database.GetAllBusinessMembersByBusinessId(this.Id))
+            foreach (var businessMember in database.GetAllBusinessMembersByBusinessId(Id))
             {
                 if (businessMember.Value.PersonId == personId)
                 {
@@ -49,7 +55,7 @@ namespace Roleplay.Schemas
         }
         public BusinessMember? GetMemberByPersonId(Database database, Person person)
         {
-            foreach (var businessMember in database.GetAllBusinessMembersByBusinessId(this.Id))
+            foreach (var businessMember in database.GetAllBusinessMembersByBusinessId(Id))
             {
                 if (businessMember.Value.PersonId == person.Id)
                 {
@@ -63,7 +69,7 @@ namespace Roleplay.Schemas
         public BusinessMember CreateMember(Database database, BusinessMember newBusinessMember)
         {
             BusinessMember businessMember = database.CreateBusinessMember(newBusinessMember, this);
-            this.LinkMember(database, businessMember);
+            LinkMember(database, businessMember);
             return businessMember;
         }
 
@@ -77,6 +83,13 @@ namespace Roleplay.Schemas
             database.CreateLinkPersonToBusiness(person, this);
         }
 
-        
+
+        public Invitation CreateInvitation(Database database, Invitation invitation)
+        {
+            Invitation newInvitation = database.CreateInvitation(invitation);
+            database.LinkMultiplePersonToInvitation(new Guid[] { invitation.FromId, invitation.ToId }, newInvitation.Id);
+            return newInvitation;
+        }
+
     }
 }

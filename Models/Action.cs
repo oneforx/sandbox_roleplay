@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 
-namespace Roleplay.Schemas
+namespace Roleplay.Models
 {
 
     public interface IAction
@@ -34,7 +34,7 @@ namespace Roleplay.Schemas
 
         public Action(string name) : base("action")
         {
-            this.Name = name;
+            Name = name;
         }
 
         public event ActionHandler ActionCompleted;
@@ -44,7 +44,7 @@ namespace Roleplay.Schemas
             ActionCompleted?.Invoke(this, e);
         }
 
-        [Roleplay.Events.Action.Common.ClientDidAction]
+        [Events.Action.Common.ClientDidAction]
         public void OnDidAction(Action action, IClient client)
         {
             Log.Info(action);

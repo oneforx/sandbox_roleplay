@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Roleplay.Schemas;
 using Sandbox;
 
 namespace Roleplay
@@ -12,12 +11,6 @@ namespace Roleplay
     public partial class Database
     {
         public string Name { get; set; }
-
-        #region Objects
-
-        public Dictionary<Guid, Schemas.Invitation> Invitations { get; set; } = new Dictionary<Guid, Schemas.Invitation>();
-        #endregion
-
         
 
         public Database(string name)

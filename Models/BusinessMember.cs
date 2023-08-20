@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Roleplay.Schemas
+namespace Roleplay.Models
 {
     public class BusinessMember : Table
     {
@@ -12,7 +12,7 @@ namespace Roleplay.Schemas
 
         public BusinessMember(Person person) : base("business_member")
         {
-            this.PersonId = person.Id;
+            PersonId = person.Id;
         }
     }
 }

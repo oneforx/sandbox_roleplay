@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Roleplay.Engine;
+using Roleplay.Models;
 
 namespace Roleplay.Events
 {
@@ -15,7 +16,7 @@ namespace Roleplay.Events
 
             public const string ClientDidActionId = "engine.common.did_action";
 
-            [MethodArguments(typeof(Schemas.Action), typeof(IClient))]
+            [MethodArguments(typeof(Models.Action), typeof(IClient))]
             public class ClientDidAction : EventAttribute
             {
                 public ClientDidAction() : base(ClientDidActionId)

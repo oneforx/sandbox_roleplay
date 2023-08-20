@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Roleplay.Schemas
+namespace Roleplay.Models
 {
-    public class LinkBusinessJobHasTask
+    public class LinkBusinessMemberHasJob
     {
+        public Guid BusinessId { get; set; }
+
+        public Guid MemberId { get; set; }
+
         public Guid JobId { get; set; }
-        public Guid TaskId { get; set; }
     }
 }

@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Roleplay.Schemas
+namespace Roleplay.Models
 {
     public class LinkBusinessHasJob
     {
         public Guid JobId { get; set; }
         public Guid BusinessId { get; set; }
-        
+
         public LinkBusinessHasJob(Guid businessId, Guid jobId)
         {
-            this.JobId = jobId;
-            this.BusinessId = businessId;
+            JobId = jobId;
+            BusinessId = businessId;
         }
 
         /*public List<Business> GetAllBusiness(Database database)

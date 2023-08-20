@@ -1,4 +1,4 @@
-namespace Roleplay.Bank
+namespace Roleplay.Models
 {
     public class BankAccount
     {
@@ -8,8 +8,8 @@ namespace Roleplay.Bank
 
         public BankAccount(long id, long ownerId)
         {
-            this.Id = id;
-            this.OwnerId = ownerId;
+            Id = id;
+            OwnerId = ownerId;
         }
     }
 }
