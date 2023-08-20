@@ -15,7 +15,7 @@ namespace Roleplay.Events
 
 			public const string InitID = "business.client.init";
 
-			[MethodArguments(typeof(Roleplay.System.Database))]
+			[MethodArguments(typeof(Roleplay.Systems.Database))]
 			public class InitAttribute : EventAttribute
 			{
 				public InitAttribute() : base(InitID)

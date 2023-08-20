@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Sandbox;
 
-namespace Roleplay.System
+namespace Roleplay.Systems
 {
 	public partial class Database
     {
@@ -78,7 +78,7 @@ namespace Roleplay.System
         }
 
         [Events.Database.Client.Init]
-        public static void OnClientDatabaseInit(Roleplay.System.Database database)
+        public static void OnClientDatabaseInit(Roleplay.Systems.Database database)
         {
             Database.Current = database;
             Database.Current.ReadyOnClient = true;

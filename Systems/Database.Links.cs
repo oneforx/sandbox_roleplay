@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Roleplay.Models;
 
-namespace Roleplay.System
+namespace Roleplay.Systems
 {
     public partial class Database
     {

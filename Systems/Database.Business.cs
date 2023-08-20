@@ -6,7 +6,7 @@ using Roleplay.Models;
 using Sandbox;
 
 #nullable enable
-namespace Roleplay.System
+namespace Roleplay.Systems
 {
     public partial class Database : BaseNetworkable
     {
