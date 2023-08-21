@@ -18,6 +18,13 @@
         <div class="buttonContainer">
             <button onclick=""><h1>Jobs</h1></button>
             <button onclick=""><h1>Jobs</h1></button>
+            <select>
+                <option>Choose</option>
+                @foreach(var businesses in Database.Current.GetAllBusinessByPersonId(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).Id))
+                {
+                    <option>@businesses.Value.Name</option>
+                }
+            </select>
         </div>
     </div>
     <div class="navigator-canvas" slot="navigator-canvas"></div>
@@ -53,5 +60,12 @@
         {
             enable = !enable;
         }
+    }
+
+    [ConCmd.Server("getAllPlayerBusiness")]
+    public static void GetAllPlayerBusiness()
+    {
+        Person person = Database.Current.GetPersonBySteamId(ConsoleSystem.Caller.Client.SteamId);
+        Database.Current.GetAllBusinessByPersonId(person.Id);
     }
 }

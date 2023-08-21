@@ -55,6 +55,15 @@
     public static void CreateBusinessCommand(string businessName)
     {
         Person person = Database.Current.GetPersonBySteamId(ConsoleSystem.Caller.Client.SteamId);
-        Database.Current.CreateBusinessWithOwner(new Business(businessName), person.Id);
+        Business business = new Business(businessName);
+        Database.Current.CreateBusinessWithOwner(business, person.Id);
+        UpdateClientDatabase(business.Serialize());
+    }
+
+    [ClientRpc]
+    public static void UpdateClientDatabase(string businessData)
+    {
+        Business business = Table.Deserialize<Business>(businessData);
+        Database.Current.Tables.Add(business);
     }
 }

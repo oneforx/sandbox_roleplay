@@ -14,8 +14,8 @@
 <root>
     <div class="buttonContainerWrapper">
         <div class="buttonContainer">
-            <button onclick="@(() => Navigate("/createBusiness"))" style="display: @(clientHasBusiness ? "none" : "flex")"><h1>Create Business</h1></button>
-            <button onclick="@(() => Navigate("/"))"><h1>Jobs</h1></button>
+            <button onclick="@(() => Navigate("/create"))"><h1>Create Business</h1></button>
+            <button onclick="@(() => Navigate("/list"))"><h1>List of All Business</h1></button>
         </div>
     </div>
     <div class="navigator-canvas" slot="navigator-canvas"></div>
@@ -23,13 +23,13 @@
 
 @code {
     public bool enable = false;
-    public bool clientHasBusiness = false;
 
     public BusinessManagerPanel()
     {
         DefaultUrl = "/";
 
-        AddDestination("/createBusiness", typeof(BusinessManagerCreatePanel));
+        AddDestination("/create", typeof(BusinessManagerCreatePanel));
+        AddDestination("/list", typeof(BusinessManagerListPanel));
 
         Event.Register(this);
     }
@@ -55,11 +55,5 @@
         {
             enable = !enable;
         }
-    }
-
-    [Roleplay.Events.Business.Client.SelfJoin]
-    public void OnClientCreatedBusiness(Models.Business b)
-    {
-        clientHasBusiness = true;
     }
 }

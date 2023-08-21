@@ -1,0 +1,30 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using Sandbox;
+@using Roleplay.Systems;
+@using System.Threading.Tasks;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+    <div class="container">
+        @foreach (var business in Database.Current.GetAllTableByType<Models.Business>())
+        {
+            if(!business.Value.IsPublic)
+            {
+                <h1>@business.Value.Name</h1>
+            }
+        }
+    </div>
+</root>
+
+@code {
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Database.Current.GetAllTableByType<Models.Business>().Count);
+    }
+}
