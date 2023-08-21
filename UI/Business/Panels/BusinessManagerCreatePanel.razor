@@ -64,6 +64,6 @@
     public static void UpdateClientDatabase(string businessData)
     {
         Business business = Table.Deserialize<Business>(businessData);
-        Database.Current.Tables.Add(business);
+        Database.Current.Tables.Add(business.Id, business);
     }
 }
