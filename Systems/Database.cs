@@ -61,7 +61,8 @@ namespace Roleplay.Systems
         {
             FileSystem.Data.WriteAllText(Name + ".json", this.Serialize());
         }
-        /*
+
+
         [GameEvent.Server.ClientJoined]
         public static void OnClientJoined(ClientJoinedEvent ev)
         {
@@ -79,6 +80,6 @@ namespace Roleplay.Systems
         {
             Database.Current = database;
             Database.Current.ReadyOnClient = true;
-        }*/
+        }
     }
 }
