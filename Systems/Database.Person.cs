@@ -14,18 +14,18 @@ namespace Roleplay.Systems
 
         public Person CreatePerson(Person person)
         {
-            this.Persons[person.Id] = person;
-            return this.Persons[person.Id];
+            this.Tables[person.Id] = person;
+            return (Person)this.Tables[person.Id];
         }
 
         public Person? GetPersonById(Guid id)
         {
-            return this.Persons[id];
+            return (Person)this.Tables[id];
         }
 
         public Person? GetPersonBySteamId(long id)
         {
-            foreach (var person in this.Persons)
+            foreach (var person in this.GetAllTableByType<Person>())
             {
                 if (person.Value.SteamId == id)
                 {
@@ -53,7 +53,7 @@ namespace Roleplay.Systems
         {
             List<Link<Person, Business>> result = new List<Link<Person, Business>>();
             
-            foreach(var linkPersonToBusiness in this.GetAllLinkOfType<Person, Business>().Values)
+            foreach(var linkPersonToBusiness in this.GetListOfLinkOfType<Person, Business>())
             {
                 if (linkPersonToBusiness.From.Id == person.Id && linkPersonToBusiness.To.Id == business.Id)
                 {

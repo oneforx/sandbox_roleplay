@@ -235,15 +235,22 @@ namespace Roleplay.Systems
             return this.GetAllTableByType<Task>();
         }
 
-        public Dictionary<Guid, Task> GetAllBusinessTasksByBusinessJobId(Guid jobId)
+        public Dictionary<Guid, Task> GetAllTasksByJobId(Guid jobId)
         {
             Dictionary<Guid, Task> businessTasks = new();
 
-            foreach (Task linkJobHasTask in this.GetTableById<Job>(jobId))
+            foreach (Link<Job, Task> linkJobHasTask in this.GetListOfLinkOfType<Job, Task>())
             {
-                if (linkJobHasTask.JobId == jobId && this.Tasks.ContainsKey(linkJobHasTask.TaskId))
+                if (this.Tables.ContainsKey(linkJobHasTask.To.Id))
                 {
-                    businessTasks[linkJobHasTask.TaskId] = this.Tasks[linkJobHasTask.TaskId];
+                    if (linkJobHasTask.From.Id == jobId)
+                    {
+                        businessTasks[linkJobHasTask.To.Id] = (Task)this.Tables[linkJobHasTask.To.Id];
+                    }
+                }
+                else
+                {
+                    throw new Exception("A Link of <" + linkJobHasTask.From.Type + "," + linkJobHasTask.To.Type +"> has been found but the table non existent");
                 }
             }
 
@@ -255,14 +262,18 @@ namespace Roleplay.Systems
         {
             Dictionary<Guid, Task> businessTasks = new Dictionary<Guid, Task>();
 
-            foreach (var linkBusinessJobToTask in this.LinkBusinessJobHasTasks)
-            {
-                var linkedJob = this.LinkBusinessHasJobs.Find(linkBusinessToJob =>
-                    linkBusinessToJob.BusinessId == businessId && linkBusinessToJob.JobId == linkBusinessJobToTask.JobId);
+            foreach (var linkBusinessToJob in this.GetListOfLinkOfType<Business, Job>())
+			{
 
-                if (linkedJob != null && this.Tasks.ContainsKey(linkBusinessJobToTask.TaskId))
-                {
-                    businessTasks[linkBusinessJobToTask.TaskId] = this.Tasks[linkBusinessJobToTask.TaskId];
+				if (linkBusinessToJob.From.Id == businessId)
+				{
+					foreach (var linkBusinessJobToTask in this.GetListOfLinkOfType<Job, Task>())
+				    {
+                        if  (linkBusinessJobToTask.From.Id == linkBusinessToJob.To.Id && !businessTasks.ContainsKey(linkBusinessJobToTask.To.Id))
+                        {
+                            businessTasks.Add(linkBusinessJobToTask.To.Id, this.GetTableById<Task>(linkBusinessJobToTask.To.Id));
+                        }
+                    }
                 }
             }
 
@@ -272,9 +283,14 @@ namespace Roleplay.Systems
 
         public bool DeleteBusinessTaskById(Guid taskId)
         {
-            if (!this.Tasks.ContainsKey(taskId)) return false;
+            if (!this.Tables.ContainsKey(taskId)) return false;
 
-            this.Tasks.Remove(taskId);
+            this.Tables.Remove(taskId);
+
+            foreach (Link<Job, Task> jobToTask in this.GetListOfLinkOfType<Job, Task>())
+            {
+                this.Tables.Remove(jobToTask.Id);
+            }
 
             return true;
         }
@@ -285,39 +301,42 @@ namespace Roleplay.Systems
 
         public BusinessMember CreateBusinessMember(BusinessMember businessMember, Business business)
         {
-            this.BusinessMembers[businessMember.Id] = businessMember;
+            this.Tables[businessMember.Id] = businessMember;
 
-            return this.BusinessMembers[businessMember.Id];
+            return (BusinessMember)this.Tables[businessMember.Id];
         }
 
-        public LinkBusinessHasMember LinkBusinessMember(BusinessMember businessMember, Business business)
+        public Link<Business, BusinessMember> LinkBusinessMember(BusinessMember businessMember, Business business)
         {
-            LinkBusinessHasMember newLinkBusinessHasMember = new LinkBusinessHasMember(businessMember, business);
-            this.LinkBusinessHasMembers.Add(newLinkBusinessHasMember);
-            return newLinkBusinessHasMember;
+            Link<Business, BusinessMember> newLinkBusinessHasMember = new Link<Business, BusinessMember>(business.Id, businessMember.Id);
+            this.Tables.Add(newLinkBusinessHasMember.Id, newLinkBusinessHasMember);
+            return (Link<Business, BusinessMember>)this.Tables[newLinkBusinessHasMember.Id];
         }
 
-        public BusinessMember? GetBusinessMemberById(Guid taskId)
+        public BusinessMember? GetBusinessMemberById(Guid memberId)
         {
-            return this.BusinessMembers[taskId];
+            return (BusinessMember?)this.Tables[memberId];
         }
+
+        /*
+         * TODO: GetBusinessMembersByBusinessId
+         */
+        
 
         public Dictionary<Guid, BusinessMember> GetAllBusinessMembers()
         {
-            return this.BusinessMembers;
+            return this.GetAllTableByType<BusinessMember>();
         }
 
         public List<BusinessMember> GetAllBusinessMembersByBusinessJobId(Guid jobId)
         {
             List<BusinessMember> businessMembers = new();
 
-            Dictionary<Guid, BusinessMember> allMembers = GetAllBusinessMembers();
-
-            foreach (LinkBusinessMemberHasJob linkBusinessMemberHasJob in this.LinkBusinessMemberHasJobs)
+            foreach (Link<BusinessMember, Job> linkBusinessMemberHasJob in this.GetListOfLinkOfType<BusinessMember, Job>())
             {
-                if (linkBusinessMemberHasJob.JobId == jobId && allMembers.ContainsKey(linkBusinessMemberHasJob.MemberId))
+                if (linkBusinessMemberHasJob.To.Id == jobId)
                 {
-                    businessMembers.Add(allMembers[linkBusinessMemberHasJob.MemberId]);
+                    businessMembers.Add((BusinessMember)this.Tables[linkBusinessMemberHasJob.From.Id]);
                 }
             }
 
@@ -329,11 +348,11 @@ namespace Roleplay.Systems
         {
             Dictionary<Guid, BusinessMember> businessMembers = new Dictionary<Guid, BusinessMember>();
 
-            foreach (var linkBusinessToMember in this.LinkBusinessHasMembers)
+            foreach (var linkBusinessToMember in this.GetListOfLinkOfType<Business, BusinessMember>())
             {
-                if (linkBusinessToMember.BusinessId == businessId && this.BusinessMembers.ContainsKey(linkBusinessToMember.MemberId))
+                if (linkBusinessToMember.From.Id == businessId)
                 {
-                    businessMembers[linkBusinessToMember.MemberId] = this.BusinessMembers[linkBusinessToMember.MemberId];
+                    businessMembers[linkBusinessToMember.To.Id] = (BusinessMember)this.Tables[linkBusinessToMember.To.Id];
                 }
             }
 
@@ -343,9 +362,15 @@ namespace Roleplay.Systems
 
         public bool DeleteBusinessMemberById(Guid memberId)
         {
-            if (!this.BusinessMembers.ContainsKey(memberId)) return false;
+            if (!this.GetAllTableByType<BusinessMember>().ContainsKey(memberId)) return false;
 
-            this.BusinessMembers.Remove(memberId);
+            this.Tables.Remove(memberId);
+            
+            foreach (var table in this.GetListOfLinkOfType<BusinessMember, Job>())
+            {
+                this.Tables.Remove(table.Id);
+            }
+
             return true;
         }
 

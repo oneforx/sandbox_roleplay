@@ -65,10 +65,10 @@ namespace Roleplay.Systems
 			return null;
 		}
 
-        public Dictionary<Guid, Table> GetAllLinkedTable()
+        /*public Dictionary<Guid, Table> GetAllLinkedTable()
         {
             
-        }
+        }*/
 
         public static T Deserialize<T>(string businessData)
         {

@@ -82,7 +82,7 @@ namespace Roleplay.Models
             return businessMember;
         }
 
-        public LinkBusinessHasMember LinkMember(Database database, BusinessMember businessMember)
+        public Link<Business, BusinessMember> LinkMember(Database database, BusinessMember businessMember)
         {
             return database.LinkBusinessMember(businessMember, this);
         }

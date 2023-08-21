@@ -46,6 +46,19 @@ namespace Roleplay.Systems
 			return result;
 		}
 
+		public class Fruit : Table
+		{
+
+		}
+
+		public void CreateGame()
+		{
+			Person moi = new Person(0, "", "", 11);
+			Fruit pomme = new Fruit();
+			this.Tables.Add(pomme.Id, pomme);
+			
+		}
+
 		public Dictionary<Guid, Table> GetAllTableById(Guid id)
 		{
 			Dictionary<Guid, Table> result = new Dictionary<Guid, Table>();
