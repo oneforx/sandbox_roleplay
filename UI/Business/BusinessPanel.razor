@@ -1,0 +1,57 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using System.Threading.Tasks;
+@using Sandbox.UI;
+@using Sandbox;
+@using Roleplay.Systems;
+@using Roleplay.Models;
+
+@attribute [StyleSheet]
+@inherits Sandbox.UI.NavHostPanel
+
+@namespace Roleplay.UI
+
+<root>
+    <div class="buttonContainerWrapper">
+        <div class="buttonContainer">
+            <button onclick=""><h1>Jobs</h1></button>
+            <button onclick=""><h1>Jobs</h1></button>
+        </div>
+    </div>
+    <div class="navigator-canvas" slot="navigator-canvas"></div>
+</root>
+
+@code {
+    bool enable = false;
+
+    public BusinessPanel()
+    {
+        DefaultUrl = "/";
+
+        AddDestination("/", typeof(BusinessHomePanel));
+        AddDestination("/members", typeof(BusinessMemberListPanel));
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        if(enable)
+        {
+            Parent.SetClass("openBusiness", true);
+            SetClass("hidden", false);
+        }
+        else
+        {
+            Parent.SetClass("openBusiness", false);
+            SetClass("hidden", true);
+        }
+
+        if(Input.Pressed("phone"))
+        {
+            enable = !enable;
+        }
+    }
+}

@@ -32,6 +32,7 @@ namespace Roleplay.Systems
 
 			if (ownerPerson != null)
             {
+                newBusiness.SetPersonOwner(ownerPerson);
 				Event.Run(Events.Business.Server.PersonCreatedBusinessID, ownerPerson, business);
                 ResponseOnSelfJoin(business.Serialize());
                 return newBusiness;

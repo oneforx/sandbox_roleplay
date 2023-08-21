@@ -1,0 +1,72 @@
+﻿.openBusiness BusinessPanel {
+    pointer-events: all;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+
+    .navigator-canvas {
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navigator-body {
+        background-color: rgba(0, 0, 0, 0.3);
+        padding-left: 45px;
+        padding-right: 50px;
+        padding-bottom: 30px;
+        padding-top: 30px;
+        border-radius: 50px;
+    }
+
+    .buttonContainerWrapper {
+        position: absolute;
+        top: 8.5%;
+        left: 10%;
+        z-index: 1000;
+
+        .buttonContainer {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            height: 900px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 50px;
+
+            button {
+                height: 30px;
+                width: 250px;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 20px;
+                padding: 30px 20px;
+                border-radius: 50px;
+                color: #fff;
+                background-color: #0066CC;
+                transition: all 0.3s ease-in;
+
+                h1 {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 30px;
+                    transition: all 0.3s ease-in;
+                }
+            }
+
+            button:hover {
+                transition: all 0.3s ease-in;
+                background-color: #003C78;
+
+                h1 {
+                    font-size: 35px;
+                    color: #BCBCBC;
+                    transition: all 0.3s ease-in;
+                }
+            }
+        }
+    }
+}

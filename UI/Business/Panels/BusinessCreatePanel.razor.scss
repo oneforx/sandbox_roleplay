@@ -1,0 +1,60 @@
+﻿.container {
+    background-color: rgba(0, 0, 0, 0.9);
+    width: 82.5%;
+    height: 900px;
+    left: 18.2%;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    textentry {
+        transition: opacity 0.1s ease;
+        background-color: rgba( #090d10, 0.9 );
+        border-radius: 50px;
+        height: 50px;
+        border-radius: 50px;
+        padding: 20px;
+        width: 500px;
+    }
+
+    &.businessManager {
+        textentry {
+            opacity: 1;
+            cursor: text;
+        }
+    }
+
+    button {
+        position: absolute;
+        top: 87%;
+        height: 30px;
+        width: 300px;
+        margin-top: 20px;
+        padding: 30px 20px;
+        border-radius: 50px;
+        color: #fff;
+        background-color: #0066CC;
+        transition: all 0.3s ease-in;
+
+        h1 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            transition: all 0.3s ease-in;
+        }
+    }
+
+    button:hover {
+        transition: all 0.3s ease-in;
+        background-color: #003C78;
+
+        h1 {
+            font-size: 35px;
+            color: #BCBCBC;
+            transition: all 0.3s ease-in;
+        }
+    }
+}

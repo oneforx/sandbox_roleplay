@@ -1,0 +1,60 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using System.Threading.Tasks;
+@using Sandbox;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+    <div class="container">   
+        <TextEntry @ref=Input onblur=@CloseInput/>
+
+        <button onclick="@CreateBusiness"><h1>Create Business</h1></button>
+    </div>
+</root>
+
+@code {
+    public static TextEntry Input { get; set; }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        Input.Placeholder = string.IsNullOrEmpty(Input.Text) ? "Enter your Business Name : " : string.Empty;
+    }
+
+    private void FocusInput()
+    {
+        Input.Focus();
+        AddClass("businessManager");
+    }
+
+    private void CloseInput()
+    {
+        Input.Blur();
+        Input.Text = string.Empty;
+        Input.Label.SetCaretPosition(0);
+        RemoveClass("businessManager");
+    }
+
+    public void CreateBusiness()
+    {
+        if(Input.Text != string.Empty)
+        {
+            CreateBusinessCommand(Input.Text);
+        }
+    }
+
+    [ConCmd.Server("createBusiness")]
+    public static void CreateBusinessCommand(string businessName)
+    {
+        Person person = Database.Current.GetPersonBySteamId(ConsoleSystem.Caller.Client.SteamId);
+        Database.Current.CreateBusinessWithOwner(new Business(businessName), person.Id);
+    }
+}
