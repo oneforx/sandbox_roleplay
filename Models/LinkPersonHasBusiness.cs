@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-
+using Roleplay.Systems;
 namespace Roleplay.Models
 {
+
     public class LinkPersonHasBusiness
     {
         public Guid BusinessId { get; set; }

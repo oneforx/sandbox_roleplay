@@ -9,7 +9,7 @@ using Roleplay.Systems;
 #nullable enable
 namespace Roleplay.Models
 {
-	public enum LeftReason
+    public enum LeftReason
 	{
 		Normal,
 		Bann
@@ -20,7 +20,7 @@ namespace Roleplay.Models
         public string? Name { get; set; }
 
 
-		public Business(string name) : base("business", "Business")
+		public Business(string name) : base("Business")
         {
             Name = name;
         }

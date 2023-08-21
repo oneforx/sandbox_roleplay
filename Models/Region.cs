@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Sandbox;
 using Roleplay.Entities.Components;
 
-namespace Roleplay.Map
+namespace Roleplay.Models
 {
     public class Region
     {
@@ -20,7 +20,7 @@ namespace Roleplay.Map
 
         public IList<IEntity> GetAllPropertyPartEntitiesInBound()
         {
-            IEnumerable<Entity> entities = RoleplayGameManager.FindInBox(new BBox(StartPosition, EndPosition));
+            IEnumerable<Entity> entities = Entity.FindInBox(new BBox(StartPosition, EndPosition));
             IList<IEntity> entitiesWithComponent = new List<IEntity>();
             foreach (var entity in entities)
             {

@@ -9,19 +9,16 @@ namespace Roleplay.Systems
 {
     public partial class Database
 	{
-		public Dictionary<Guid, Invitation> Invitations { get; set; } = new Dictionary<Guid, Invitation>();
-
-
 		public Invitation CreateInvitation(Invitation invitation)
 		{
-			this.Invitations[invitation.Id] = invitation;
-			return this.Invitations[invitation.Id];
+			this.Tables[invitation.Id] = invitation;
+			return (Invitation)this.Tables[invitation.Id];
 		}
 
-		public LinkPersonHasInvitation LinkPersonToInvitation(Guid personId, Guid invitationId)
+		public Link<Person, Invitation> LinkPersonToInvitation(Guid personId, Guid invitationId)
 		{
-			LinkPersonHasInvitation linkPersonHasInvitation = new LinkPersonHasInvitation(personId, invitationId);
-			this.LinkPersonHasInvitations.Add(linkPersonHasInvitation);
+			Link <Person, Invitation> linkPersonHasInvitation = new Link<Person, Invitation>(personId, invitationId);
+			this.Tables.Add(linkPersonHasInvitation.Id, linkPersonHasInvitation);
 			return linkPersonHasInvitation;
 		}
 		public bool LinkMultiplePersonToInvitation(Guid[] personIds, Guid invitationId)

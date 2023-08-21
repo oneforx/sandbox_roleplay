@@ -9,7 +9,7 @@ using Sandbox;
 
 namespace Roleplay.Systems
 {
-	public partial class Database
+	public partial class Database : BaseNetworkable
     {
 
         [JsonIgnore]
@@ -25,10 +25,6 @@ namespace Roleplay.Systems
             Current = this;
         }
 
-        public void GetTableTypeList()
-        {
-
-        }
 
         public static Database Deserialize(string databaseData)
 		{
@@ -43,6 +39,7 @@ namespace Roleplay.Systems
             if (FileSystem.Data.FileExists(databaseName + ".json"))
             {
                 Database.Current = Deserialize(FileSystem.Data.ReadAllText(databaseName + ".json"));
+                Log.Info(Database.Current.Tables);
             }
             else
             {
@@ -57,14 +54,14 @@ namespace Roleplay.Systems
             JsonSerializerOptions options = new();
             options.IncludeFields = true;
             options.WriteIndented = true;
-            return JsonSerializer.Serialize<Database>(this, options);
+			return JsonSerializer.Serialize<Database>(this, options);
         }
 
         public void Save()
         {
             FileSystem.Data.WriteAllText(Name + ".json", this.Serialize());
         }
-
+        /*
         [GameEvent.Server.ClientJoined]
         public static void OnClientJoined(ClientJoinedEvent ev)
         {
@@ -82,6 +79,6 @@ namespace Roleplay.Systems
         {
             Database.Current = database;
             Database.Current.ReadyOnClient = true;
-        }
+        }*/
     }
 }

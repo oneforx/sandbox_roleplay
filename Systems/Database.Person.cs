@@ -10,11 +10,6 @@ namespace Roleplay.Systems
 #nullable enable
     public partial class Database
     {
-        public Dictionary<Guid, Person> Persons { get; set; } = new();
-        public List<LinkPersonHasBusiness> LinkPersonHasBusinesses { get; set; } = new List<LinkPersonHasBusiness>();
-
-        public List<LinkPersonHasInvitation> LinkPersonHasInvitations { get; set; } = new List<LinkPersonHasInvitation>();
-
         #region [CRUD] Person
 
         public Person CreatePerson(Person person)
@@ -46,32 +41,27 @@ namespace Roleplay.Systems
 
         #endregion
     
-        public LinkPersonHasBusiness LinkPersonToBusiness(Person person, Business business)
+        public Link<Person, Business> LinkPersonToBusiness(Person person, Business business)
         {
-            LinkPersonHasBusiness? linkPersonHasBusiness = GetLinkPersonHasBusiness(person, business);
-            if (linkPersonHasBusiness == null)
-            {
-                linkPersonHasBusiness = new LinkPersonHasBusiness(person, business);
-
-				this.LinkPersonHasBusinesses.Add(linkPersonHasBusiness);
-
-				return linkPersonHasBusiness;
-            }
-
-            return linkPersonHasBusiness;
-        }
+            Link<Person, Business> linkBusiness = new Link<Person, Business>(person.Id, business.Id);
+			this.Tables.Add(linkBusiness.Id, linkBusiness);
+            return (Link<Person, Business>)this.Tables[linkBusiness.Id];
+		}
 
 
-        public LinkPersonHasBusiness? GetLinkPersonHasBusiness(Person person, Business business)
+        public List<Link<Person, Business>> SelectPersonHasBusiness(Person person, Business business)
         {
-            foreach(var linkPersonToBusiness in this.LinkPersonHasBusinesses)
+            List<Link<Person, Business>> result = new List<Link<Person, Business>>();
+            
+            foreach(var linkPersonToBusiness in this.GetAllLinkOfType<Person, Business>().Values)
             {
-                if (linkPersonToBusiness.PersonId == person.Id && linkPersonToBusiness.BusinessId == business.Id)
+                if (linkPersonToBusiness.From.Id == person.Id && linkPersonToBusiness.To.Id == business.Id)
                 {
-                    return linkPersonToBusiness;
+					result.Add(linkPersonToBusiness);
                 }
             }
-            return null;
+
+            return result;
         }
 
     }

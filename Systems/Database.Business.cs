@@ -10,14 +10,6 @@ namespace Roleplay.Systems
 {
     public partial class Database : BaseNetworkable
     {
-        public Dictionary<Guid, Business> Businesses { get; set; } = new Dictionary<Guid, Business>();
-
-        public Dictionary<Guid, Job> Jobs { get; set; } = new Dictionary<Guid, Job>();
-
-        public Dictionary<Guid, BusinessMember> BusinessMembers { get; set; } = new Dictionary<Guid, BusinessMember>();
-
-        public Dictionary<Guid, Task> Tasks { get; set; } = new Dictionary<Guid, Task>();
-
         #region [CRUD] Business
 
         public Business CreateBusiness(Business business)
@@ -25,12 +17,12 @@ namespace Roleplay.Systems
             if (business == null)
             {
                 business = new Business(Guid.NewGuid().ToString());
-                this.Businesses[business.Id] = business;
-                return this.Businesses[business.Id];
+                this.Tables[business.Id] = business;
+                return (Business)this.Tables[business.Id];
             }
 
-            this.Businesses[business.Id] = business;
-            return this.Businesses[business.Id];
+            this.Tables[business.Id] = business;
+            return (Business)this.Tables[business.Id];
         }
 
         public Business CreateBusinessWithOwner(Business business, Guid ownerId)
@@ -67,40 +59,40 @@ namespace Roleplay.Systems
 
 		public Business? GetBusinessById(Guid businessId)
         {
-            return this.Businesses[businessId];
+            return (Business?)this.Tables[businessId];
         }
 
         public Dictionary<Guid, Business> GetBusinessByOwnerId(Guid ownerId)
         {
-            Dictionary<Guid, Business> businesses = new();
+            Dictionary<Guid, Business> personBusinesses = new();
             
-            foreach (var personHasBusiness in this.LinkPersonHasBusinesses)
+            foreach (var link in this.GetDictOfLinkOfType<Person, Business>().Values)
             {
-                if (personHasBusiness.PersonId == ownerId)
+                if (link.From.Id == ownerId)
                 {
-                    Business? businessFound = this.GetBusinessById(personHasBusiness.BusinessId);
+                    Business? businessFound = this.GetBusinessById(link.To.Id);
                     if (businessFound == null) throw new Exception("The person is linked to a non-existent business");
-                    businesses.Add(personHasBusiness.BusinessId, businessFound);
+					personBusinesses.Add(link.To.Id, businessFound);
                 }
             }
 
-            return businesses;
+            return personBusinesses;
         }
 
         public IDictionary<Guid, Business> GetAllBusiness()
         {
-            return this.Businesses;
+            return GetAllTableByType<Business>();
         }
 
         public Dictionary<Guid, Business> GetAllBusinessByPersonId(Guid personId)
         {
             Dictionary<Guid, Business> businesses = new();
 
-            foreach (LinkPersonHasBusiness linkPersonHasBusiness in this.LinkPersonHasBusinesses)
+            foreach (Link<Person, Business> link in this.GetDictOfLinkOfType<Person, Business>().Values)
             {
-                if (linkPersonHasBusiness.PersonId == personId && this.Businesses.ContainsKey(linkPersonHasBusiness.BusinessId))
+                if (link.From.Type == "Person" && link.From.Id == personId && this.Tables.ContainsKey(link.To.Id))
                 {
-                    businesses[linkPersonHasBusiness.BusinessId] = this.Businesses[linkPersonHasBusiness.BusinessId];
+                    businesses[link.To.Id] = (Business)this.Tables[link.To.Id];
                 }
             }
 
@@ -120,15 +112,16 @@ namespace Roleplay.Systems
 
         public bool DeleteBusinessById(Guid businessId)
         {
-            if (!this.Businesses.ContainsKey(businessId)) return false;
+            if (!this.Tables.ContainsKey(businessId)) return false;
 
-            this.Businesses.Remove(businessId);
+            this.Tables.Remove(businessId);
 
             // Remove all links
 
-            this.LinkBusinessHasJobs.ForEach((linkBusinessToJob) => DeleteBusinessJobById(linkBusinessToJob.JobId));
+            // TODO: 
+            // this.Tables.ForEach((linkBusinessToJob) => DeleteBusinessJobById(linkBusinessToJob.JobId));
                 
-            this.LinkBusinessHasJobs.RemoveAll((linkJob) => linkJob.BusinessId == businessId);
+            // this.Tables.RemoveAll((linkJob) => linkJob.BusinessId == businessId);
 
             return true;
         }
@@ -139,36 +132,47 @@ namespace Roleplay.Systems
 
         public Job CreateJob(Job businessJob)
         {
-            this.Jobs.Add(businessJob.Id, businessJob);
-            return this.Jobs[businessJob.Id];
+            this.Tables.Add(businessJob.Id, businessJob);
+            return (Job)this.Tables[businessJob.Id];
         }
 
-        public LinkBusinessHasJob LinkBusinessToJob(Guid businessId, Guid jobId)
+        public Link<Business, Job> LinkBusinessToJob(Guid businessId, Guid jobId)
         {
-            LinkBusinessHasJob linkBusinessHasJob = new(businessId, jobId);
-            this.LinkBusinessHasJobs.Add(linkBusinessHasJob);
-            return linkBusinessHasJob;
+            Link<Business, Job> linkBusinessToJob = new Link<Business, Job>(businessId, jobId);
+            this.Tables.Add(linkBusinessToJob.Id, linkBusinessToJob);
+            return linkBusinessToJob;
         }
 
-        public Job? GetBusinessJobById(Guid jobId)
+        public Job? GetJobById(Guid jobId)
         {
-            return this.Jobs[jobId];
+            Dictionary<Guid, Job> jobs = this.GetAllTableByType<Job>();
+            foreach(var job in jobs.Values)
+            {
+               if (job.Id == jobId) return job;
+            }
+            return null;
         }
 
-        public IDictionary<Guid, Job> GetAllBusinessJobs()
+        public IDictionary<Guid, Job> GetAllJobs()
         {
-            return this.Jobs;
+            return this.GetAllTableByType<Job>();
         }
 
-        public Dictionary<Guid, Job> GetAllBusinessJobsByBusinessId(Guid businessId)
+		public IDictionary<Guid, Job> GetAllBusinessJobs()
+		{
+			return this.GetAllTableByType<Job>();
+		}
+
+
+		public Dictionary<Guid, Job> GetAllBusinessJobsByBusinessId(Guid businessId)
         {
             Dictionary<Guid, Job> businessJobs = new();
 
-            foreach (LinkBusinessHasJob linkBusinessHasJob in this.LinkBusinessHasJobs)
+            foreach (Link<Business, Job> linkBusinessHasJob in this.GetListOfLinkOfType<Business, Job>())
             {
-                if (linkBusinessHasJob.BusinessId == businessId && this.Jobs.ContainsKey(linkBusinessHasJob.JobId))
+                if (linkBusinessHasJob.From.Id == businessId && this.GetAllTableByType<Job>().ContainsKey(linkBusinessHasJob.To.Id))
                 {
-                    businessJobs[linkBusinessHasJob.JobId] = this.Jobs[linkBusinessHasJob.JobId];
+                    businessJobs[linkBusinessHasJob.To.Id] = (Job)this.Tables[linkBusinessHasJob.To.Id];
                 }
             }
 
@@ -177,13 +181,29 @@ namespace Roleplay.Systems
     
         public bool DeleteBusinessJobById(Guid jobId)
         {
-            if (!this.Jobs.ContainsKey(jobId)) return false;
+            if (!this.GetAllTableByType<Job>().ContainsKey(jobId)) return false;
 
-            this.Jobs.Remove(jobId);
+            this.Tables.Remove(jobId);
 
-            this.LinkBusinessJobHasTasks.ForEach((linkBusinessJobToTask) => DeleteBusinessTaskById(linkBusinessJobToTask.TaskId));
+            foreach (var link in this.GetListOfLinkOfType<Business, Job>())
+            {
+                if (link.To.Id == jobId)
+                {
+                    this.Tables.Remove(link.Id);
+                }
+            }
 
-            this.LinkBusinessJobHasTasks.RemoveAll((linkBusinessJobToTask) => linkBusinessJobToTask.JobId == jobId);
+			foreach (var link in this.GetListOfLinkOfType<Job, Task>())
+			{
+				if (link.From.Id == jobId)
+				{
+                    // Remove the link 
+					this.Tables.Remove(link.Id);
+                    // Remove task tables
+                    this.Tables.Remove(link.To.Id);
+				}
+			}
+
 
             return true;
         }
@@ -194,31 +214,31 @@ namespace Roleplay.Systems
 
         public Task CreateTask(Task businessTask)
         {
-            this.Tasks[businessTask.Id] = businessTask;
-            return this.Tasks[businessTask.Id];
+            this.Tables[businessTask.Id] = businessTask;
+            return (Task)this.Tables[businessTask.Id];
 		}
-		public LinkJobHasTask LinkBusinessTaskToJob(Guid taskId, Guid jobId)
+		public Link<Job, Task> LinkBusinessTaskToJob(Guid taskId, Guid jobId)
 		{
-            LinkJobHasTask linkBusinessToTask = new LinkJobHasTask(jobId, taskId);
-            this.LinkBusinessJobHasTasks.Add(linkBusinessToTask);
-            return linkBusinessToTask;
+			Link<Job, Task> linkBusinessToTask = new Link<Job, Task>(jobId, taskId);
+            this.Tables.Add(linkBusinessToTask.Id, linkBusinessToTask);
+            return (Link<Job, Task>)this.Tables[linkBusinessToTask.Id];
 		}
 
 		public Task? GetBusinessTaskById(Guid taskId)
         {
-            return this.Tasks[taskId];
+            return (Task)this.Tables[taskId];
         }
 
         public Dictionary<Guid, Task> GetAllBusinessTasks()
         {
-            return this.Tasks;
+            return this.GetAllTableByType<Task>();
         }
 
         public Dictionary<Guid, Task> GetAllBusinessTasksByBusinessJobId(Guid jobId)
         {
             Dictionary<Guid, Task> businessTasks = new();
 
-            foreach (LinkJobHasTask linkJobHasTask in this.LinkBusinessJobHasTasks)
+            foreach (Task linkJobHasTask in this.GetTableById<Job>(jobId))
             {
                 if (linkJobHasTask.JobId == jobId && this.Tasks.ContainsKey(linkJobHasTask.TaskId))
                 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 
-namespace Roleplay.Map
+namespace Roleplay.Models
 {
     public enum PropertyType
     {
