@@ -29,7 +29,7 @@
     {
         DefaultUrl = "/";
 
-        AddDestination("/createBusiness", typeof(BusinessCreatePanel));
+        AddDestination("/createBusiness", typeof(BusinessManagerCreatePanel));
 
         Event.Register(this);
     }
@@ -37,6 +37,8 @@
     public override void Tick()
     {
         base.Tick();
+
+        Log.Info(Database.Current.Tables.Count);
 
         if (enable)
         {

@@ -19,10 +19,13 @@ namespace Roleplay.Models
     {
         public string? Name { get; set; }
 
+        public bool IsPublic { get; set; }
 
-		public Business(string name) : base("Business")
+
+		public Business(string name, bool isPublic = false) : base("Business")
         {
             Name = name;
+            IsPublic = isPublic;
         }
 
 
