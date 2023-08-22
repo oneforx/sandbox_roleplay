@@ -32,7 +32,6 @@ namespace Roleplay.Systems
 							if (Database.LinkTypes.ContainsKey(linkTypeName))
 							{
 								var linkType = Database.LinkTypes[linkTypeName];
-								Log.Info(linkType);
 								return (Link)JsonSerializer.Deserialize(root.GetRawText(), linkType);	
 							}
 							else

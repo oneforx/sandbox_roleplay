@@ -42,7 +42,7 @@ namespace Roleplay.Systems
 
 		public Link() { }
 
-		public Link(Guid from, string fromType, Guid to, string toType) : base(fromType +"Link"+ toType, "Link")
+		public Link(Guid from, string fromType, Guid to, string toType) : base(fromType +"To"+ toType, "Link")
 		{
 			From = new Target(from, fromType);
 			To = new Target(to, toType);

@@ -224,6 +224,7 @@ namespace Roleplay.Systems
 		{
 			Link<Job, Task> linkBusinessToTask = new Link<Job, Task>(jobId, taskId);
             this.Tables.Add(linkBusinessToTask.Id, linkBusinessToTask);
+            Database.AddTableOnClient(linkBusinessToTask.Serialize());
             return (Link<Job, Task>)this.Tables[linkBusinessToTask.Id];
 		}
 

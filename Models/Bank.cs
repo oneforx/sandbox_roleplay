@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Roleplay.Models
 {
-    public class Bank
+    public class Bank : Roleplay.Systems.Table
     {
         public long Id;
 

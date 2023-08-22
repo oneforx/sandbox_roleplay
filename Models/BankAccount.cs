@@ -1,15 +1,29 @@
 namespace Roleplay.Models
 {
-    public class BankAccount
+    public class BankAccount : Roleplay.Systems.Table
     {
-        public long Id;
+        public float Money { get; set; }
 
-        public long OwnerId;
-
-        public BankAccount(long id, long ownerId)
+        public BankAccount(float money)
         {
-            Id = id;
-            OwnerId = ownerId;
+            Money = money;
+        }
+    
+        public void AddMoney(float money)
+        {
+            this.Money += money;
+        }
+
+        public void SetMoney(float money)
+        {
+            this.Money = money;
+        }
+
+        public void TransferMoney(float money, BankAccount account) 
+        {
+            if (money < 0 && this.Money - money < 0) return;
+            
+            account.Money = money;
         }
     }
 }

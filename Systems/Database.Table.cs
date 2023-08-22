@@ -82,14 +82,13 @@ namespace Roleplay.Systems
 				if (table.TableType == "Link")
 				{
 					Link tableLink = (Link)table;
-					if (tableLink.From != null && tableLink.From.Type == typeof(T).Name && tableLink.To != null && tableLink.To.Type == typeof(T).Name)
+					if (tableLink.From != null && tableLink.From.Type == typeof(F).Name && tableLink.To != null && tableLink.To.Type == typeof(T).Name)
 					{
 						result.Add(table.Id, (Link<F, T>)table);
 					}
 				}
 			}
-
-			return result;
+            return result;
 		}
 
 		public List<Link<F, T>> GetListOfLinkOfType<F, T>() where F : Table where T : Table
@@ -110,5 +109,25 @@ namespace Roleplay.Systems
 			return result;
 		}
 
-	}
+
+        public List<Link> GetListOfLinkOfType(Type F, Type T)
+        {
+            List<Link> result = new();
+
+            foreach (var table in this.Tables.Values)
+            {
+                if (table.TableType == "Link")
+                {
+                    Link tableLink = (Link)table;
+                    if (tableLink.From != null && tableLink.From.Type ==  F.Name && tableLink.To != null && tableLink.To.Type == T.Name)
+                    {
+                        result.Add((Link)table);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+    }
 }

@@ -36,7 +36,6 @@
     public BusinessPanel()
     {
         DefaultUrl = "/";
-
         AddDestination("/", typeof(BusinessHomePanel));
         AddDestination("/members", typeof(BusinessMemberListPanel));
     }
@@ -60,6 +59,11 @@
         {
             enable = !enable;
         }
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Database.Current.GetAllBusinessByPersonId(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).Id).Count);
     }
 
     [ConCmd.Server("getAllPlayerBusiness")]

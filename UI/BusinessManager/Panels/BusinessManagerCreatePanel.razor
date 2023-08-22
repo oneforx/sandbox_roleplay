@@ -11,18 +11,20 @@
 @attribute [StyleSheet]
 @namespace Roleplay.UI
 
-#nullable true
-
 <root>
     <div class="container">   
         <TextEntry @ref=Input onblur=@CloseInput/>
 
+        
         <button onclick="@CreateBusiness"><h1>Create Business</h1></button>
+        <p>Vous avez @BusinessCount Business</p>
     </div>
 </root>
 
 @code {
     public static TextEntry Input { get; set; }
+
+    public int BusinessCount => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<Business>().Count;
 
     public override void Tick()
     {
@@ -51,6 +53,11 @@
         {
             CreateBusinessCommand(Input.Text);
         }
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<Business>().Count);
     }
 
     [ConCmd.Server("createBusiness")]

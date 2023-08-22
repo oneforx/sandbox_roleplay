@@ -64,7 +64,6 @@ namespace Roleplay.Systems
             if (FileSystem.Data.FileExists(databaseName + ".json"))
             {
                 Database.Current = Deserialize(FileSystem.Data.ReadAllText(databaseName + ".json"));
-                Log.Info(Database.Current.Tables);
             }
             else
             {
