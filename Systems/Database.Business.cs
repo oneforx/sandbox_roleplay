@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Roleplay.Models;
+using Roleplay.Utils;
 using Sandbox;
 
 #nullable enable
@@ -18,23 +19,24 @@ namespace Roleplay.Systems
             {
                 business = new Business(Guid.NewGuid().ToString());
                 this.Tables[business.Id] = business;
-                return (Business)this.Tables[business.Id];
+				Database.AddTableOnClient(To.Everyone, business.Serialize());
+				return (Business)this.Tables[business.Id];
             }
 
             this.Tables[business.Id] = business;
-            return (Business)this.Tables[business.Id];
+
+			Database.AddTableOnClient(To.Everyone, business.Serialize());
+			return (Business)this.Tables[business.Id];
         }
 
         public Business CreateBusinessWithOwner(Business business, Guid ownerId)
         {
             Business newBusiness = this.CreateBusiness(business);
             Person? ownerPerson = GetPersonById(ownerId);
-
 			if (ownerPerson != null)
             {
+                IClient? client = ClientManager.GetClientById(ownerPerson.SteamId);
                 newBusiness.SetPersonOwner(ownerPerson);
-				Event.Run(Events.Business.Server.PersonCreatedBusinessID, ownerPerson, business);
-                ResponseOnSelfJoin(business.Serialize());
                 return newBusiness;
             }
             else
@@ -43,18 +45,18 @@ namespace Roleplay.Systems
             }
         }
 
-        [ClientRpc]
+        /*[ClientRpc]
         public static void ResponseOnSelfJoin(string businessData)
 		{
 			Event.Run(Events.Business.Client.OnSelfJoinID, Business.Deserialize<Business>(businessData));
-		}
+		}*/
 
 		public Business CreateBusinessWithOwner(Business business, Person owner)
 		{
 			Business newBusiness = this.CreateBusiness(business);
 			this.LinkPersonToBusiness(owner, newBusiness);
-			Event.Run(Events.Business.Server.PersonJoinedBusinessID, owner, business);
-			ResponseOnSelfJoin(business.Serialize());
+			/*Event.Run(Events.Business.Server.PersonJoinedBusinessID, owner, business);
+			ResponseOnSelfJoin(business.Serialize());*/
 			return newBusiness;
 		}
 

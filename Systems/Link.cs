@@ -12,22 +12,10 @@ using System.IO;
 
 namespace Roleplay.Systems
 {
-
-	public class Target<T> where T : Table
+	public class Link<F, T> : Link where F : Table where T : Table
 	{
-		public Guid Guid { get; set; }
+		public Link() : base() { }
 
-		public string Type { get; set; } = typeof(T).Name;
-
-		public Target(Guid guid)
-		{
-			this.Guid = guid;
-		}
-	}
-
-
-    public class Link<F, T> : Link, ILink where F : Table where T : Table
-	{
 		public Link(Guid from, Guid to) : base(from, typeof(F).Name, to, typeof(T).Name) { }
 	}
 
@@ -36,20 +24,16 @@ namespace Roleplay.Systems
 		public Guid Id { get; set; }
 		public string Type { get; set; }
 
-		public Target(Guid guid, string type)
+
+		[JsonConstructor]
+		public Target(Guid id, string type)
 		{
-			this.Id = guid;
+			this.Id = id;
 			this.Type = type;
 		}
 	}
 
-	public interface ILink
-	{
-		public Target From { get; set; }
-		public Target To { get; set; }
-	}
-
-	public class Link : Table, ILink
+	public class Link : Table
 	{
 		public Target? From { get; set; }
 		public Target? To { get; set; }

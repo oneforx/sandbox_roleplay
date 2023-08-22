@@ -9,7 +9,6 @@ namespace Roleplay.Models
 {
     public class Person : Table
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
         public long SteamId { get; set; }
         public string Firstname { get; set; }
         public string Lastname { get; set; }

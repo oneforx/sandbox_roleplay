@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Roleplay.Models
 {
-    public class PhoneHasContact
+    public class PhoneContact
     {
         public Guid Phone;
     }

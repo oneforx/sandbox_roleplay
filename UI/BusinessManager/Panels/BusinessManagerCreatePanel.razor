@@ -11,6 +11,8 @@
 @attribute [StyleSheet]
 @namespace Roleplay.UI
 
+#nullable true
+
 <root>
     <div class="container">   
         <TextEntry @ref=Input onblur=@CloseInput/>
@@ -54,16 +56,8 @@
     [ConCmd.Server("createBusiness")]
     public static void CreateBusinessCommand(string businessName)
     {
-        Person person = Database.Current.GetPersonBySteamId(ConsoleSystem.Caller.Client.SteamId);
+        Person? person = Database.Current.GetPersonBySteamId(ConsoleSystem.Caller.Client.SteamId);
         Business business = new Business(businessName);
         Database.Current.CreateBusinessWithOwner(business, person.Id);
-        UpdateClientDatabase(business.Serialize());
-    }
-
-    [ClientRpc]
-    public static void UpdateClientDatabase(string businessData)
-    {
-        Business business = Table.Deserialize<Business>(businessData);
-        Database.Current.Tables.Add(business.Id, business);
     }
 }

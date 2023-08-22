@@ -70,6 +70,11 @@ namespace Roleplay.Systems
             
         }*/
 
+        public void UpdateClient()
+		{
+			Database.UpdateTableOnClient(To.Everyone, this.Serialize());
+		}
+
         public static T Deserialize<T>(string businessData)
         {
             return Json.Deserialize<T>(businessData);
@@ -78,7 +83,7 @@ namespace Roleplay.Systems
 
         public string Serialize()
         {
-            return Json.Serialize(this);
+            return Json.Serialize((object)this);
         }
     }
 

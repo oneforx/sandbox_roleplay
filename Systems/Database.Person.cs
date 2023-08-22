@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Roleplay.Models;
+using Roleplay.Utils;
+using Sandbox;
 
 namespace Roleplay.Systems
 {
@@ -14,8 +16,14 @@ namespace Roleplay.Systems
 
         public Person CreatePerson(Person person)
         {
-            this.Tables[person.Id] = person;
-            return (Person)this.Tables[person.Id];
+            IClient? personClient = ClientManager.GetClientById(person.SteamId);
+            if (personClient != null)
+            {
+                this.Tables[person.Id] = person;
+                Database.AddTableOnClient(To.Single(personClient), person.Serialize());
+                return (Person)this.Tables[person.Id];
+            }
+            throw new Exception("[CreatePerson] Could not create a person because the given steamId is not recognized");
         }
 
         public Person? GetPersonById(Guid id)
@@ -45,6 +53,7 @@ namespace Roleplay.Systems
         {
             Link<Person, Business> linkBusiness = new Link<Person, Business>(person.Id, business.Id);
 			this.Tables.Add(linkBusiness.Id, linkBusiness);
+            Database.AddTableOnClient(To.Everyone, linkBusiness.Serialize());
             return (Link<Person, Business>)this.Tables[linkBusiness.Id];
 		}
 

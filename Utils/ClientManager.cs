@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace Roleplay.Utils
 {
     public static class ClientManager
     {
-        public static IClient GetClientById(long clientId)
+        public static IClient? GetClientById(long clientId)
         {
             foreach (var client in Game.Clients)
             {

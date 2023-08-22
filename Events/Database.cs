@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using Roleplay.Systems;
+using Sandbox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,12 +26,36 @@ namespace Roleplay.Events
 			}
 
 
+			public const string OnTableAddedID = "business.client.table_added";
+
+			[MethodArguments(typeof(Table))]
+			public class OnTableAdded : EventAttribute
+			{
+				public OnTableAdded() : base(OnTableAddedID)
+				{
+
+				}
+			}
+
+
 			public const string OnTableUpdatedID = "business.client.table_updated";
 
-			[MethodArguments(typeof(Database))]
-			public class OnTableUpdatedAttribute : EventAttribute
+			[MethodArguments(typeof(Table))]
+			public class OnTableUpdated : EventAttribute
 			{
-				public OnTableUpdatedAttribute() : base(OnTableUpdatedID)
+				public OnTableUpdated() : base(OnTableUpdatedID)
+				{
+
+				}
+			}
+
+
+			public const string OnTableDeletedID = "business.client.table_deleted";
+
+			[MethodArguments(typeof(Table))]
+			public class OnTableDeleted : EventAttribute
+			{
+				public OnTableDeleted() : base(OnTableDeletedID)
 				{
 
 				}
