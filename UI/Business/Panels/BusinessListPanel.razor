@@ -1,0 +1,46 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using Sandbox;
+@using System.Threading.Tasks;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+	<div class="business-list-header">
+		<div>Business List</div>
+	</div>
+
+	<div class="business-list-content">
+		@foreach(Business business in AllBusinessOfPerson)
+		{
+			<div onclick="@(() => Navigator.Navigate("/business/home?id="+business.Id.ToString()))">@business.Name</div>
+		}
+	</div>
+</root>
+
+@code {
+	public NavHostPanel Navigator;
+
+	public List<Business> AllBusinessOfPerson => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).GetListOfBusinesses();
+
+	public override void OnParentChanged()
+	{
+		base.OnParentChanged();
+
+
+		Navigator = Ancestors.OfType<NavHostPanel>().FirstOrDefault();
+	}
+
+
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine(AllBusinessOfPerson.Count);
+	}
+}

@@ -51,5 +51,24 @@ namespace Roleplay.Utils
                     Log.Error("Client " + sourceClientId + " could not be found");
                 }
         }
+        public static string GetQuery(string queryName, string url = "id=dazdazdza&ownerId=dazdazdzad")
+        {
+            string queryPrefix = queryName + "=";
+
+            // Si l'URL ne contient pas le nom de la requête, retourner null ou "" selon votre préférence
+            if (!url.Contains(queryPrefix))
+                return null;
+
+            // Trouver le début du paramètre de requête
+            int startIndex = url.IndexOf(queryPrefix) + queryPrefix.Length;
+
+            // Obtenir la fin du paramètre de requête
+            int endIndex = url.IndexOf('&', startIndex);
+            if (endIndex == -1)
+                endIndex = url.Length;
+
+            // Extraire la valeur
+            return url.Substring(startIndex, endIndex - startIndex);
+        }
     }
 }

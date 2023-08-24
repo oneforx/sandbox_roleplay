@@ -14,37 +14,52 @@
 @namespace Roleplay.UI
 
 <root>
-    <div class="buttonContainerWrapper">
-        <div class="buttonContainer">
-            <button onclick=""><h1>Jobs</h1></button>
-            <button onclick=""><h1>Jobs</h1></button>
-            <select>
-                <option>Choose</option>
-                @foreach(var businesses in Database.Current.GetAllBusinessByPersonId(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).Id))
+    <div class="business-panel-sidebar">
+        <div class="business-panel-sidebar-header">
+            <button onclick="@(() => Navigate("/"))">Home</button>
+            <button onclick="@(()=> Navigate("/businesses"))"><h1>Mes Business</h1></button>
+        </div>
+        <div class="business-panel-sidebar-nav">
+            @if (CurrentUrl != "/" && CurrentUrl != "/businesses" && CurrentQuery != null)
+            {
+                <div onclick="@(() => Navigate("/business/members?"+CurrentQuery))">Membres</div>
+                <div onclick="@(() => Navigate("/business/jobs?"+CurrentQuery))">Jobs</div>
+                @if (CurrentQuery != null && ThisPerson.IsOwnerOf(Guid.Parse(Utils.Utils.GetQuery("id", CurrentQuery))))
                 {
-                    <option>@businesses.Value.Name</option>
+                    <div onclick="@(() => Navigate("/business/tasks?"+CurrentQuery))">Tasks</div>
                 }
-            </select>
+            }
         </div>
     </div>
     <div class="navigator-canvas" slot="navigator-canvas"></div>
 </root>
 
 @code {
-    bool enable = false;
+    public static bool Enabled = false;
+
+    public Person ThisPerson => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId);
 
     public BusinessPanel()
     {
         DefaultUrl = "/";
         AddDestination("/", typeof(BusinessHomePanel));
-        AddDestination("/members", typeof(BusinessMemberListPanel));
+        AddDestination("/businesses", typeof(BusinessListPanel));
+        AddDestination("/business/home", typeof(BusinessIdHomePanel));
+        AddDestination("/business/members", typeof(BusinessIdMembersPanel));
+        AddDestination("/business/members/details", typeof(BusinessIdMembersPanel));
+        AddDestination("/business/jobs", typeof(BusinessIdJobsPanel));
+        AddDestination("/business/jobs/details", typeof(BusinessIdJobsPanel));
+        AddDestination("/business/tasks", typeof(BusinessIdTasksPanel));
     }
+
 
     public override void Tick()
     {
         base.Tick();
 
-        if(enable)
+        Log.Info(CurrentQuery);
+
+        if(BusinessPanel.Enabled)
         {
             Parent.SetClass("openBusiness", true);
             SetClass("hidden", false);
@@ -55,21 +70,10 @@
             SetClass("hidden", true);
         }
 
-        if(Input.Pressed("phone"))
-        {
-            enable = !enable;
-        }
     }
 
     protected override int BuildHash()
     {
         return HashCode.Combine(Database.Current.GetAllBusinessByPersonId(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).Id).Count);
-    }
-
-    [ConCmd.Server("getAllPlayerBusiness")]
-    public static void GetAllPlayerBusiness()
-    {
-        Person person = Database.Current.GetPersonBySteamId(ConsoleSystem.Caller.Client.SteamId);
-        Database.Current.GetAllBusinessByPersonId(person.Id);
     }
 }

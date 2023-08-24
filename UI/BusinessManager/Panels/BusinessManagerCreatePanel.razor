@@ -57,7 +57,7 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<Business>().Count);
+        return HashCode.Combine(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<Business>().Count, Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<BusinessMember>().Count);
     }
 
     [ConCmd.Server("createBusiness")]
@@ -68,3 +68,4 @@
         Database.Current.CreateBusinessWithOwner(business, person.Id);
     }
 }
+""

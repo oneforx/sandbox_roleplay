@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Roleplay.Models;
+using Sandbox.UI;
 
-namespace Roleplay.Systems
+namespace Roleplay.UI
 {
-    public partial class Database
+    public class RPRootPanel : RootPanel
     {
-        #region Links
-        #endregion
     }
+
 }

@@ -16,6 +16,7 @@ namespace Roleplay.Systems
         [JsonIgnore]
         public bool ReadyOnClient = false;
 
+
         public static Database Current { get; set; }
 
         public static Dictionary<string, Type> Types = new()

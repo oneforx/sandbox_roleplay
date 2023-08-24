@@ -78,7 +78,37 @@ namespace Roleplay.Systems
             return list;
         }
 
-        public List<Table> ListLinkedTo<T>() where T : Table
+        public bool IsOwnerOf(Guid tableId)
+        {
+            bool found = false;
+            foreach(Link link in Database.Current.GetAllTableByType<Link>().Values)
+            {
+                if (link.From.Id == this.Id && link.To.Id == tableId)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            return found;
+        }
+
+		public bool IsMemberOf(Guid tableId)
+		{
+			bool found = false;
+			foreach (Link link in Database.Current.GetAllTableByType<Link>().Values)
+			{
+				if (link.From.Id == tableId && link.To.Id == this.Id)
+				{
+					found = true;
+					break;
+				}
+			}
+
+			return found;
+		}
+
+		public List<Table> ListLinkedTo<T>() where T : Table
         {
             List<Table> list = new List<Table>();
             foreach (Link link in Database.Current.GetListOfLinkOfType(Database.Types[this.TableType], typeof(T)))

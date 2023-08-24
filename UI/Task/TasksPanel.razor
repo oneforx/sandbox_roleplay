@@ -1,0 +1,54 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using Sandbox;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+    <div class="">   
+        <TextEntry @ref=Input onblur=@CloseInput/>
+
+        
+        @foreach (Models.Task task in Tasks)
+        {
+            <p>@task.Name</p>
+        }
+    </div>
+</root>
+
+@code {
+    public static TextEntry Input { get; set; }
+
+    public List<Models.Task> Tasks => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<Job>().ListLinkedTo<Models.Task>();
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        Input.Placeholder = string.IsNullOrEmpty(Input.Text) ? "your Business Name : " : string.Empty;
+    }
+
+    private void FocusInput()
+    {
+        Input.Focus();
+    }
+
+    private void CloseInput()
+    {
+        Input.Blur();
+        Input.Text = string.Empty;
+        Input.Label.SetCaretPosition(0);
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<Job>().ListLinkedTo<Task>().Count);
+    }
+}
+""
