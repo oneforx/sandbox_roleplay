@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -73,6 +74,7 @@ namespace Roleplay.Systems
 
 			return result;
 		}
+
 
 		public Dictionary<Guid, Link<F, T>> GetDictOfLinkOfType<F, T>() where F : Table where T : Table
 		{

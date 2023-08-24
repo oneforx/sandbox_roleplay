@@ -12,11 +12,11 @@
 @namespace Roleplay.UI
 
 <root>
-	<div class="business-list-header">
+	<div class="subpage-header">
 		<div>Business List</div>
 	</div>
 
-	<div class="business-list-content">
+	<div class="subpage-content">
 		@foreach(Business business in AllBusinessOfPerson)
 		{
 			<div onclick="@(() => Navigator.Navigate("/business/home?id="+business.Id.ToString()))">@business.Name</div>
