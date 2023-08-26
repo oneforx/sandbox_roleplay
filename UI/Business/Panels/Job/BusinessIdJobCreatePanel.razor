@@ -1,0 +1,78 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using System.Threading.Tasks;
+@using Sandbox;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+	<div class="subpage-header">
+		<div>Create a Job</div>
+	</div>
+	<div class="subpage-content business-job-create-content">
+        <TextEntry @ref=Input Placeholder="Test"/>
+		<button onclick="@CreateJob">Créer</button>
+	</div>
+</root>
+
+@code {
+	public static TextEntry Input { get; set; }
+
+	public NavHostPanel Navigator;
+
+	public bool IsOwner => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).IsOwnerOf(ThisBusiness.Id);
+
+	public Business ThisBusiness => Database.Current.GetTableById<Business>(Guid.Parse(this.Id));
+
+	public List<Job> ThisJobs => ThisBusiness.ListLinkedTo<Job>().ConvertTo<Job>();
+
+	public BusinessIdJobCreatePanel()
+	{
+		Log.Info(this.Id);
+	}
+
+	public override void OnParentChanged()
+	{
+		base.OnParentChanged();
+
+		Navigator = Ancestors.OfType<NavHostPanel>().FirstOrDefault();
+	}
+
+
+	private void FocusInput()
+	{
+		Input.Focus();
+		AddClass("businessManager");
+	}
+
+	private void CloseInput()
+	{
+		Input.Blur();
+		Input.Text = string.Empty;
+		Input.Label.SetCaretPosition(0);
+		RemoveClass("businessManager");
+	}
+
+	public void CreateJob()
+	{
+		CreateJobRemote(Input.Text, this.Id);
+	}
+
+	[ConCmd.Server("create_job_business")]
+	public static void CreateJobRemote(string jobName, string businessId)
+	{
+		Job newJob = Database.Current.CreateJob(new Job(jobName));
+		Link<Business, Job> newLink = Database.Current.LinkBusinessToJob(Guid.Parse(businessId), newJob.Id);
+	}
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine(ThisBusiness, ThisJobs.Count);
+	}
+}

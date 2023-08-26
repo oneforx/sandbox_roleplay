@@ -32,14 +32,19 @@ namespace Roleplay.Systems
             { "MapProperty", typeof(MapProperty) },
             { "Person", typeof(Person) },
             { "Link", typeof(Link) },
-        };
+            { "Task", typeof(Models.Task) },
+		};
 
         public static Dictionary<string, Type> LinkTypes = new()
         {
             { "BusinessToBusinessMember", typeof(Link<Business, BusinessMember>) },
             { "BusinessMemberToJob", typeof(Link<BusinessMember, Job>) },
             { "PersonToBusiness", typeof(Link<Person, Business>) },
-        };
+            { "BusinessToJob", typeof(Link<Business, Job>) },
+            { "BusinessToTask", typeof(Link<Business, Models.Task>) },
+            { "JobToTask", typeof(Link<Job, Models.Task>) },
+            { "JobToPerson", typeof(Link<Job, Models.Person>) },
+		};
 
 
         public string Name { get; set; }

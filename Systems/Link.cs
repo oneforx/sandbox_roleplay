@@ -38,14 +38,22 @@ namespace Roleplay.Systems
 		public Target? From { get; set; }
 		public Target? To { get; set; }
 
+		[JsonIgnore]
 		public bool IsLink = true;
-
+		
 		public Link() { }
 
 		public Link(Guid from, string fromType, Guid to, string toType) : base(fromType +"To"+ toType, "Link")
 		{
 			From = new Target(from, fromType);
 			To = new Target(to, toType);
+		}
+ 
+		public Link<F, T> ConvertTo<F,T>() where F : Table where T : Table
+		{
+			Link<F,T> link = new Link<F, T>(this.From.Id, this.To.Id);
+			link.Id = this.Id;
+			return link;
 		}
 	}
 

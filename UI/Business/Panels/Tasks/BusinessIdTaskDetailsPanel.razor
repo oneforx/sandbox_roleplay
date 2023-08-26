@@ -1,0 +1,146 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using System.Threading.Tasks;
+@using Sandbox;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+	@if (ThisTask != null)
+	{
+		<div class="subpage-header">
+			<div>Job : @ThisTask.Name</div>
+		</div>
+		@if (IsOwner)
+		{
+			<div class="business-jobs-admin-navbar">
+				<button onclick="@DeleteTask">Delete</button>
+			</div>
+		}
+		<div class="subpage-content">
+			<div class="section">
+				<div class="section-header">
+					Description
+				</div>
+				<div class="section-body">
+					@ThisTask.Description
+				</div>
+			</div>
+			@if (IsOwner)
+			{
+				<div class="section">
+					<div class="section-header">
+						Modifier
+					</div>
+					<div class="section-body section-task-edition">
+						<div class="input-label">
+							<div>Action</div>
+							<div><TextEntry @ref=ActionInput Placeholder="Test" value="@ThisTask.Action.Name"/></div>
+						</div>
+						<div class="input-label"> 
+							<div>ActionArgument</div>
+							<div><TextEntry @ref=ActionArgumentInput Placeholder="Argument" value="@ThisTask.Action.TypeName"/></div>
+						</div>
+						<div class="input-label">
+							<div>How many time ?</div>
+							<div><TextEntry @ref=HowManyInput Placeholder="How many time ?" value="@ThisTask.TriggerActionCount"/></div>
+						</div>
+					</div>
+					<div class="section-footer">
+						<div>
+							<button class="button-cta" onclick="@Modify">Modify</button>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	}
+</root>
+
+@code {
+	public NavHostPanel Navigator;
+
+	public static TextEntry ActionInput { get; set; }
+
+	public static TextEntry ActionArgumentInput { get; set; }
+
+	public static TextEntry HowManyInput { get; set; }
+
+	public bool IsOwner => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).IsOwnerOf(ThisBusiness.Id);
+
+	public Business ThisBusiness => Database.Current.GetTableById<Business>(Guid.Parse(this.Id));
+
+	public Models.Task? ThisTask
+	{
+		get
+		{
+			if (Navigator.CurrentQuery == null) return null;
+
+			string taskIdStr = Utils.Utils.GetQuery("taskId", Navigator.CurrentQuery);
+			if (string.IsNullOrEmpty(taskIdStr)) return null;
+
+			return Database.Current.GetTableById<Models.Task>(Guid.Parse(taskIdStr));
+		}
+	}
+
+	public BusinessIdTaskDetailsPanel()
+	{
+		Log.Info(this.Id);
+	}
+
+	public override void OnParentChanged()
+	{
+		base.OnParentChanged();
+
+		Navigator = Ancestors.OfType<NavHostPanel>().FirstOrDefault();
+	}
+
+	public void DeleteTask()
+	{
+		DeleteTaskRemote(ThisBusiness.Id.ToString(), Utils.Utils.GetQuery("jobId", Navigator.CurrentQuery));
+	}
+
+	public void Modify()
+	{
+		ModifyTask(
+			Utils.Utils.GetQuery("taskId", Navigator.CurrentQuery),
+			ActionInput.Text,
+			ActionArgumentInput.Text,
+			int.Parse(HowManyInput.Text)
+		);
+	}
+
+	[ConCmd.Server("modify_task")]
+	public static void ModifyTask(string taskId, string actionName,string actionArgument, int howMany)
+	{
+		Models.Task task = Database.Current.GetTableById<Models.Task>(Guid.Parse(taskId));
+		task.Action.Name = actionName;
+		task.Action.TypeName = actionArgument;
+		task.TriggerActionCount = howMany;
+		Database.Current.Tables[task.Id] = task;
+		Database.UpdateTableOnClient(task.Serialize());
+	}
+
+
+	[ConCmd.Server("delete_task")]
+	public static void DeleteTaskRemote(string businessId, string jobId)
+	{
+		Database.Current.DeleteTable(Guid.Parse(jobId));
+		Link<Business, Job> newLink = Database.Current.GetLinkByIds<Business, Job>(Guid.Parse(businessId), Guid.Parse(jobId));
+		Database.Current.DeleteTable(newLink.Id);
+
+		Database.DeleteTableOnClient(newLink.Id.ToString());	
+		Database.DeleteTableOnClient(jobId);
+	}
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine(ThisBusiness, ThisTask);
+	}
+}

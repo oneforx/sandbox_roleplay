@@ -13,18 +13,18 @@
 
 <root>
 	<div class="subpage-header">
-		<div>Jobs List</div>
+		<div>Tasks List</div>
 	</div>
 	@if (IsOwner)
 	{
-		<div class="business-jobs-admin-navbar">
-			<button>Create</button>
+		<div class="business-tasks-admin-navbar">
+			<button onclick="@(() => Navigator.Navigate("/business/tasks/create?id="+ this.Id))">Create</button>
 		</div>
 	}
 	<div class="subpage-content">
-		@foreach (Job job in ThisJobs)
+		@foreach (Models.Task task in ThisTasks)
 		{
-			<div onclick="@(() => Navigator.Navigate("/business/jobs/detail?id="+this.Id+"&jobId="+job.Id))">@job.Name</div>
+			<div class="list-item" onclick="@(() => Navigator.Navigate("/business/tasks/details?id="+this.Id+"&taskId="+task.Id))">@task.Description</div>
 		}
 	</div>
 </root>
@@ -36,9 +36,9 @@
 
 	public Business ThisBusiness => Database.Current.GetTableById<Business>(Guid.Parse(this.Id));
 
-	public List<Job> ThisJobs => ThisBusiness.ListLinkedTo<Job>().ConvertTo<Job>();
+	public List<Models.Task> ThisTasks => ThisBusiness.ListLinkedTo<Models.Task>().ConvertTo<Models.Task>();
 
-	public BusinessIdJobsPanel()
+	public BusinessIdTasksPanel()
 	{
 		Log.Info(this.Id);
 	}
@@ -53,6 +53,6 @@
 
 	protected override int BuildHash()
 	{
-		return HashCode.Combine(ThisBusiness);
+		return HashCode.Combine(ThisBusiness, ThisTasks.Count);
 	}
 }

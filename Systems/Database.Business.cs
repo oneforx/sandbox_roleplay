@@ -136,6 +136,7 @@ namespace Roleplay.Systems
         public Job CreateJob(Job businessJob)
         {
             this.Tables.Add(businessJob.Id, businessJob);
+            Database.AddTableOnClient(businessJob.Serialize());
             return (Job)this.Tables[businessJob.Id];
         }
 
@@ -143,6 +144,7 @@ namespace Roleplay.Systems
         {
             Link<Business, Job> linkBusinessToJob = new Link<Business, Job>(businessId, jobId);
             this.Tables.Add(linkBusinessToJob.Id, linkBusinessToJob);
+            Database.AddTableOnClient(linkBusinessToJob.Serialize());
             return linkBusinessToJob;
         }
 
@@ -218,6 +220,7 @@ namespace Roleplay.Systems
         public Task CreateTask(Task businessTask)
         {
             this.Tables[businessTask.Id] = businessTask;
+            Database.AddTableOnClient(businessTask.Serialize());
             return (Task)this.Tables[businessTask.Id];
 		}
 		public Link<Job, Task> LinkBusinessTaskToJob(Guid taskId, Guid jobId)

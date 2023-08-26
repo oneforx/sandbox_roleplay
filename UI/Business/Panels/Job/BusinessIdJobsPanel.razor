@@ -1,0 +1,120 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using System.Threading.Tasks;
+@using Sandbox;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+	<div class="subpage-header">
+		<div>Jobs List</div>
+	</div>
+	@if (IsOwner)
+	{
+		<div class="business-jobs-admin-navbar">
+			<button onclick="@(() => Navigator.Navigate("/business/jobs/create?id="+ this.Id))">Create</button>
+		</div>
+	}
+	<div class="subpage-content">
+		@foreach (Job job in ThisJobs)
+		{
+			<div class="list-item" >
+				<div onclick="@(() => Navigator.Navigate("/business/jobs/details?id="+this.Id+"&jobId="+job.Id))">@job.Name</div>
+				@if (ThisPerson != null && !ThisPerson.IsMemberOf(job.Id))
+				{
+				<div>
+					<button class="jobs-panel-button" onclick="@(() => ChooseJob(job.Id))">Choisir</button>
+				</div>
+				}
+			</div>
+		}
+	</div>
+</root>
+
+@code {
+	public NavHostPanel Navigator;
+
+	public Person? ThisPerson => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId);
+
+	public bool IsOwner => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).IsOwnerOf(ThisBusiness.Id);
+
+	public Business ThisBusiness => Database.Current.GetTableById<Business>(Guid.Parse(this.Id));
+
+	public List<Job> ThisJobs => ThisBusiness.ListLinkedTo<Job>().ConvertTo<Job>();
+
+	public BusinessIdJobsPanel()
+	{
+		Log.Info(this.Id);
+	}
+
+	public override void OnParentChanged()
+	{
+		base.OnParentChanged();
+
+		Navigator = Ancestors.OfType<NavHostPanel>().FirstOrDefault();
+	}
+
+	public void ChooseJob(Guid jobId)
+	{
+		ChooseJobRemote(jobId.ToString(), ThisBusiness.Id.ToString());
+	}
+
+	[ConCmd.Server("choose_job")]
+	public static void ChooseJobRemote(string jobId, string businessId)
+	{
+		long clientSteamId = ConsoleSystem.Caller.Client.SteamId;
+		Person clientPerson = Database.Current.GetPersonBySteamId(clientSteamId);
+		Business business = Database.Current.GetTableById<Business>(Guid.Parse(businessId));
+
+		// verify if the person already has a job in the organisation
+		bool hasJob = false;
+		Guid hasJobId = Guid.NewGuid();
+		foreach(Job job in business.ListLinkedTo<Job>().ConvertTo<Job>().ToList())
+		{
+			if (clientPerson.IsMemberOf(job.Id))
+			{
+				hasJob = true;
+				hasJobId = job.Id;
+				break;
+			}
+		}
+
+		if (hasJob)
+		{
+			if (hasJobId == Guid.Parse(jobId))
+			{
+				// Here send notification "You already have the job"
+				return;	
+			}
+			else
+			{
+				// Here delete the link of the player with the oldJob	
+				Link<Job, Person> oldLinkJobToPerson = Database.Current.GetLinkByIds<Job, Person>(hasJobId, clientPerson.Id);
+				Database.Current.Tables.Remove(oldLinkJobToPerson.Id);
+				Database.DeleteTableOnClient(oldLinkJobToPerson.Id.ToString());
+
+				Job jobToSet = Database.Current.GetTableById<Job>(Guid.Parse(jobId));
+				Link<Job, Person> linkJobToPerson = jobToSet.LinkTo<Person>(clientPerson.Id).ConvertTo<Job, Person>();
+				Database.AddTableOnClient(linkJobToPerson.Serialize());
+			}
+		}
+		else
+		{
+			Job jobToSet = Database.Current.GetTableById<Job>(Guid.Parse(jobId));
+			Link<Job, Person> linkJobToPerson = jobToSet.LinkTo<Person>(clientPerson.Id).ConvertTo<Job, Person>();
+			Database.AddTableOnClient(linkJobToPerson.Serialize());
+		}
+	}
+
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine(ThisBusiness, ThisJobs.Count);
+	}
+}

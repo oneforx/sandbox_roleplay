@@ -108,14 +108,34 @@ namespace Roleplay.Systems
 			return found;
 		}
 
+        public Link LinkTo<T>(Guid toId) where T : Table
+        {
+            Link newLink = new Link(this.Id, this.TableType, toId, typeof(T).Name);
+            Database.Current.Tables[newLink.Id] = newLink;
+            return newLink;
+        }
+
 		public List<Table> ListLinkedTo<T>() where T : Table
         {
             List<Table> list = new List<Table>();
             foreach (Link link in Database.Current.GetListOfLinkOfType(Database.Types[this.TableType], typeof(T)))
             {
-                if (link.To.Type == typeof(T).Name)
+                if (link.To.Type == typeof(T).Name && link.From.Id == this.Id)
                 {
                     list.Add(Database.Current.GetTableById<T>(link.To.Id));
+                }
+            }
+            return list;
+
+        }
+        public List<Table> ListLinkedBy<T>() where T : Table
+        {
+            List<Table> list = new List<Table>();
+            foreach (Link link in Database.Current.GetListOfLinkOfType(typeof(T), Database.Types[this.TableType]))
+            {
+                if (link.From.Type == typeof(T).Name)
+                {
+                    list.Add(Database.Current.GetTableById<T>(link.From.Id));
                 }
             }
             return list;

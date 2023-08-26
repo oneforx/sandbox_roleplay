@@ -16,7 +16,7 @@ namespace Roleplay.Systems
 			{
 				foreach (Link link in Database.Current.GetListOfLinkOfType(Database.Types[item.TableType], typeof(T)))
 				{
-					if (link.To.Type == typeof(T).Name)
+					if (link.To.Type == typeof(T).Name && link.From.Id == item.Id)
 					{
 						list.Add(Database.Current.GetTableById<T>(link.To.Id));
 					}

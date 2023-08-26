@@ -11,44 +11,36 @@
 @namespace Roleplay.UI
 
 <root>
-    <div class="">   
-        <TextEntry @ref=Input onblur=@CloseInput/>
-
-        
+    <div class="tasks-bar-header">Tasks</div>
+    <div class="tasks-bar-body">    
+        @if (Tasks.Count > 0)
+        {
         @foreach (Models.Task task in Tasks)
         {
-            <p>@task.Name</p>
+            <div class="tasks-item">
+                <div class="tasks-item-desc">@task.Action.Name @task.Action.TypeName</div>
+                <div class="tasks-item-count">@task.CurrentActionCount / @task.TriggerActionCount</div>
+            </div>
+            }
+        }
+        else
+        {
+            <div class="message">Vous avez pas de job donc pas de tâches.</div>
         }
     </div>
 </root>
 
 @code {
-    public static TextEntry Input { get; set; }
 
-    public List<Models.Task> Tasks => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<Job>().ListLinkedTo<Models.Task>();
+    public List<Models.Task> Tasks => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedBy<Job>().ListLinkedTo<Models.Task>();
 
     public override void Tick()
     {
         base.Tick();
-
-        Input.Placeholder = string.IsNullOrEmpty(Input.Text) ? "your Business Name : " : string.Empty;
-    }
-
-    private void FocusInput()
-    {
-        Input.Focus();
-    }
-
-    private void CloseInput()
-    {
-        Input.Blur();
-        Input.Text = string.Empty;
-        Input.Label.SetCaretPosition(0);
     }
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedTo<Job>().ListLinkedTo<Task>().Count);
+        return HashCode.Combine(Tasks, Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedBy<Job>());
     }
 }
-""

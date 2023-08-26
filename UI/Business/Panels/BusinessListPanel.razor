@@ -19,7 +19,13 @@
 	<div class="subpage-content">
 		@foreach(Business business in AllBusinessOfPerson)
 		{
-			<div onclick="@(() => Navigator.Navigate("/business/home?id="+business.Id.ToString()))">@business.Name</div>
+			<div class="list-item" onclick="@(() => Navigator.Navigate("/business/home?id="+business.Id.ToString()))">
+				<div class="business-desc-item">@business.Name</div>
+				@if (IsOwnerOf(business.Id))
+				{
+					<div style="margin-right: 5px">Propriétaire</div>
+				}
+			</div>
 		}
 	</div>
 </root>
@@ -28,6 +34,11 @@
 	public NavHostPanel Navigator;
 
 	public List<Business> AllBusinessOfPerson => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).GetListOfBusinesses();
+
+	public bool IsOwnerOf(Guid businessId)
+	{
+		return Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).IsOwnerOf(businessId);
+	}
 
 	public override void OnParentChanged()
 	{

@@ -1,0 +1,161 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using System.Threading.Tasks;
+@using Sandbox;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+	@if (ThisJob != null)
+	{
+		<div class="subpage-header">
+			<div>Job : @ThisJob.Name</div>
+		</div>
+		@if (IsOwner)
+		{
+			<div class="business-jobs-admin-navbar">
+				<button onclick="@DeleteJob">Delete</button>
+			</div>
+		}
+		<div class="subpage-content">
+			<div class="section">
+				<div class="section-header">
+					Description
+				</div>
+				<div class="section-body">
+					Ici vous pouvez mettre une description
+				</div>
+			</div>
+			<div class="section tasks-section">
+				<div class="section-header">
+					Tasks
+				</div>
+				<div class="section-body tasks-edition">
+
+					<div class="tasks-list tasks-list-assigned">
+						<div class="tasks-list-header">
+							Tasks of the job
+						</div>
+						<div class="tasks-list-body">
+							@foreach (Models.Task task in ThisTasks)
+							{
+								<div class="list-item">
+									<div>@task.Description</div>
+									<div class="delete-button" onclick="@(() => UnassignTaskToThisJob(task.Id))">x</div>
+								</div>
+							}
+						</div>					
+					</div>
+					@if (IsOwner)
+					{
+					<div class="tasks-list tasks-list-library">
+						<div class="tasks-list-header">
+							Tasks library
+						</div>
+						<div class="tasks-list-body">
+							@foreach (Models.Task task in ThisBusinessTasks)
+							{
+								<div class="list-item">
+									<div class="add-button" onclick="@(() => AssignTaskToThisJob(task.Id))"> @("<") </div>
+									<div>@task.Description</div>
+								</div>
+							}
+						</div>
+					</div>
+					}
+				</div>
+			</div>
+		</div>
+	}
+</root>
+
+@code {
+	public NavHostPanel Navigator;
+
+	public bool IsOwner => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).IsOwnerOf(ThisBusiness.Id);
+
+	public Business ThisBusiness => Database.Current.GetTableById<Business>(Guid.Parse(this.Id));
+
+	public Job? ThisJob
+	{
+		get
+		{
+			if (Navigator.CurrentQuery == null) return null;
+
+			string jobIdStr = Utils.Utils.GetQuery("jobId", Navigator.CurrentQuery);
+			if (string.IsNullOrEmpty(jobIdStr)) return null;
+
+			return Database.Current.GetTableById<Job>(Guid.Parse(jobIdStr));
+		}
+	}
+	public List<Models.Task> ThisTasks => ThisJob != null ? ThisJob.ListLinkedTo<Models.Task>().ConvertTo<Models.Task>() : new List<Models.Task>();
+
+	public List<Models.Task> ThisBusinessTasks => ThisBusiness.ListLinkedTo<Models.Task>().ConvertTo<Models.Task>().Where(task => ThisTasks.Find(t => task.Id == t.Id) == null).ToList();
+
+	public BusinessIdJobDetailsPanel()
+	{
+		Log.Info(this.Id);
+	}
+
+	public override void OnParentChanged()
+	{
+		base.OnParentChanged();
+
+		Navigator = Ancestors.OfType<NavHostPanel>().FirstOrDefault();
+	}
+
+	public void DeleteJob()
+	{
+		DeleteJobRemote(ThisBusiness.Id.ToString(), Utils.Utils.GetQuery("jobId", Navigator.CurrentQuery));
+	}
+
+	public void AssignTaskToThisJob(Guid taskId)
+	{
+		AssignTaskToThisJobServer(ThisJob.Id.ToString(), taskId.ToString());
+	}
+
+
+
+	[ConCmd.Server("business_assign_task_to_job")]
+	public static void AssignTaskToThisJobServer(string jobId, string taskId)
+	{
+		Link newLink = Database.Current.Tables[Guid.Parse(jobId)].LinkTo<Models.Task>(Guid.Parse(taskId));
+		Database.Current.Tables[newLink.Id] = newLink.ConvertTo<Job, Models.Task>();
+		Database.AddTableOnClient(newLink.Serialize());
+	}
+
+	public void UnassignTaskToThisJob(Guid taskId)
+	{
+		UnassignTaskToThisJobServer(ThisJob.Id.ToString(), taskId.ToString());
+	}
+
+	[ConCmd.Server("business_unassign_task_to_job")]
+	public static void UnassignTaskToThisJobServer(string jobId, string taskId)
+	{
+		Link<Job, Models.Task> currentLink = Database.Current.GetLinkByIds<Job, Models.Task>(Guid.Parse(jobId), Guid.Parse(taskId));
+		Database.Current.Tables.Remove(currentLink.Id);
+		Database.DeleteTableOnClient(currentLink.Id.ToString());
+	}
+
+	[ConCmd.Server("delete_job")]
+	public static void DeleteJobRemote(string businessId, string jobId)
+	{
+		Database.Current.DeleteTable(Guid.Parse(jobId));
+		Link<Business, Job> newLink = Database.Current.GetLinkByIds<Business, Job>(Guid.Parse(businessId), Guid.Parse(jobId));
+		Database.Current.DeleteTable(newLink.Id);
+
+		Database.DeleteTableOnClient(newLink.Id.ToString());	
+		Database.DeleteTableOnClient(jobId);
+	}
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine(ThisBusiness, ThisJob, ThisTasks.Count, ThisBusinessTasks.Count);
+	}
+}

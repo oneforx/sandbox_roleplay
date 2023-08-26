@@ -1,0 +1,102 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using System.Threading.Tasks;
+@using Sandbox;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+@using Roleplay.Entities;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+	<div class="subpage-header">
+		<div>Create a Task</div>
+	</div>
+	<div class="subpage-content business-job-create-content">
+		<div class="section">
+			<div class="section-header">
+				Créer
+			</div>
+			<div class="section-body section-task-edition">
+				<div class="input-label">
+					<div>Task Name</div>
+					<div><TextEntry @ref=TaskInput Placeholder="Test"/></div>
+				</div>
+				<div class="input-label">
+					<div>Action</div>
+					<div><TextEntry @ref=ActionInput Placeholder="Test"/></div>
+				</div>
+				<div class="input-label"> 
+					<div>ActionArgument</div>
+					<div><TextEntry @ref=ActionArgumentInput Placeholder="Argument"/></div>
+				</div>
+				<div class="input-label">
+					<div>How many time ?</div>
+					<div><TextEntry @ref=HowManyInput Placeholder="How many time ?"/></div>
+				</div>
+				<button onclick="@CreateTask">Create</button>
+			</div>
+		</div>
+	</div>
+</root>
+
+@code {
+	public static TextEntry TaskInput { get; set; }
+
+	public static TextEntry ActionInput { get; set; }
+
+	public static TextEntry ActionArgumentInput { get; set; }
+
+	public static TextEntry HowManyInput { get; set; }
+
+	public NavHostPanel Navigator;
+
+	public bool IsOwner => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).IsOwnerOf(ThisBusiness.Id);
+
+	public Business ThisBusiness => Database.Current.GetTableById<Business>(Guid.Parse(this.Id));
+
+	public List<Job> ThisJobs => ThisBusiness.ListLinkedTo<Job>().ConvertTo<Job>();
+
+	public BusinessIdTaskCreatePanel()
+	{
+		Log.Info(this.Id);
+	}
+
+	public override void OnParentChanged()
+	{
+		base.OnParentChanged();
+
+		Navigator = Ancestors.OfType<NavHostPanel>().FirstOrDefault();
+	}
+
+
+	public void CreateTask()
+	{
+		CreateTaskRemote(TaskInput.Text, ActionInput.Text, ActionArgumentInput.Text, int.Parse(HowManyInput.Text), this.Id);
+	}
+
+	[ConCmd.Server("create_task_business")]
+	public static void CreateTaskRemote(string taskName,string actionName, string actionArgumentName, int howMany, string businessId)
+	{
+		SpecifiqueAction specifiqueAction = new SpecifiqueAction(actionName, typeof(LogEntity));
+		specifiqueAction.TypeName = actionArgumentName;
+		Models.Task newTask = Database.Current.CreateTask(
+			new Models.Task(
+				taskName,
+				specifiqueAction,
+				howMany
+			)
+		);
+		Link<Business, Models.Task> newLink = Database.Current.Tables[Guid.Parse(businessId)].LinkTo<Models.Task>(newTask.Id).ConvertTo<Business, Models.Task>();
+		Database.AddTableOnClient(newLink.Serialize());
+	}
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine(ThisBusiness, ThisJobs.Count);
+	}
+}

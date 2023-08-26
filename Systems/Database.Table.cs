@@ -27,9 +27,39 @@ namespace Roleplay.Systems
 				return null;
 		}
 
+		public void DeleteTable(Guid id)
+		{
+			if (Database.Current.Tables.ContainsKey(id))
+			{
+				Database.Current.Tables.Remove(id);
+			}
+			else
+			{
+				throw new Exception("Trying to delete the table + " + id.ToString() + " but it doesn't exist on the client.");
+			}
+		}
+
 		public T GetTableById<T>(Guid id) where T : Table
 		{
 			return (T)this.Tables[id];
+		}
+		
+		public Link<F,T>? GetLinkByIds<F, T>(Guid fromId, Guid toId) where F : Table where T : Table
+		{
+			Link<F, T> linkWithTypes;
+			foreach(Table table in this.Tables.Values)
+			{
+				if (table.TableType == "Link")
+				{
+					Link link = (Link)table;
+					if (link.From.Id == fromId && link.To.Id == toId)
+					{
+						linkWithTypes = link.ConvertTo<F, T>();
+						return linkWithTypes;
+					}
+				}
+			}
+			return null;
 		}
 
 		public Dictionary<Guid, T> GetAllTableByType<T>() where T : Table

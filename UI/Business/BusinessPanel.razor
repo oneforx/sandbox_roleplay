@@ -27,6 +27,7 @@
                 @if (CurrentQuery != null && ThisPerson.IsOwnerOf(Guid.Parse(Utils.Utils.GetQuery("id", CurrentQuery))))
                 {
                     <div onclick="@(() => Navigate("/business/tasks?"+CurrentQuery))">Tasks</div>
+                    <div onclick="@(() => Navigate("/business/tasks?"+CurrentQuery))">Account</div>
                 }
             }
         </div>
@@ -48,16 +49,17 @@
         AddDestination("/business/members", typeof(BusinessIdMembersPanel));
         AddDestination("/business/members/details", typeof(BusinessIdMembersPanel));
         AddDestination("/business/jobs", typeof(BusinessIdJobsPanel));
-        AddDestination("/business/jobs/details", typeof(BusinessIdJobsPanel));
+        AddDestination("/business/jobs/create", typeof(BusinessIdJobCreatePanel));
+        AddDestination("/business/jobs/details", typeof(BusinessIdJobDetailsPanel));
         AddDestination("/business/tasks", typeof(BusinessIdTasksPanel));
+        AddDestination("/business/tasks/details", typeof(BusinessIdTaskDetailsPanel));
+        AddDestination("/business/tasks/create", typeof(BusinessIdTaskCreatePanel));
     }
 
 
     public override void Tick()
     {
         base.Tick();
-
-        Log.Info(CurrentQuery);
 
         if(BusinessPanel.Enabled)
         {
