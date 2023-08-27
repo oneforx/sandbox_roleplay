@@ -4,24 +4,29 @@
 
 
 .tasks-section {
-    flex: 1;
 
     .tasks-edition {
+        max-height: 300px;
         flex-direction: row;
 
         .tasks-list {
             flex: 1;
             display: flex;
             flex-direction: column;
+            overflow: auto;
 
             .tasks-list-header {
+                flex-shrink:0;
             }
 
             .tasks-list-body {
-                padding: 10px;
+                overflow: scroll;
+                padding: 10px 0px;
                 flex-direction: column;
 
                 .list-item {
+                    flex-shrink: 0;
+                    padding: 0px;
                     flex-direction: row;
                     align-items: center;
                 }
@@ -37,28 +42,36 @@
         .list-item {
             div:first-child {
                 flex: 1;
+                padding: 10px;
+                padding: 20px 20px;
             }
 
             .delete-button {
-                padding: 5px 10px;
-                background-color: white;
-                color: black;
+                height: 100%;
+                padding: 0px 20px;
+                align-items: center;
+                background-color: rgb(0, 0, 0, 0.8);
+                color: white;
+                font-weight: 700;
             }
         }
     }
 }
 
 .tasks-list-library {
-
+    margin-left: 10px;
     .tasks-list-body {
         .add-button {
-            padding: 5px 10px;
-            background-color: white;
-            color: black;
+            height: 100%;
+            padding: 0px 20px;
+            align-items: center;
+            background-color: rgb(0, 0, 0, 0.8);
+            color: white;
+            font-weight: 700;
         }
 
         div:last-child {
-            margin-left: 10px;
+            padding: 20px 20px;
         }
     }
 }

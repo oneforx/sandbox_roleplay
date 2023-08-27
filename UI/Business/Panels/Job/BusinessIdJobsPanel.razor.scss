@@ -7,6 +7,11 @@ BusinessIdJobsPanel {
             display: flex;
             flex-direction: row;
 
+            .list-item-job-count {
+                align-items: center;
+                padding: 0px 10px;
+            }
+
             div:first-child {
                 flex: 1;
                 padding: 15px;

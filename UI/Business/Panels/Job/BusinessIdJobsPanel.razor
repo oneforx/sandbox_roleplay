@@ -26,7 +26,10 @@
 		{
 			<div class="list-item" >
 				<div onclick="@(() => Navigator.Navigate("/business/jobs/details?id="+this.Id+"&jobId="+job.Id))">@job.Name</div>
-				@if (ThisPerson != null && !ThisPerson.IsMemberOf(job.Id))
+				<div class="list-item-job-count">
+					<label>@(GetCurrentMemberCountOfJob(job))</label><label style="margin: 0px 10px;">@(" / ")</label><label>@job.MaxMemberCount</label>
+				</div>
+				@if (ThisPerson != null && !ThisPerson.IsMemberOf(job.Id) && GetCurrentMemberCountOfJob(job) < job.MaxMemberCount)
 				{
 				<div>
 					<button class="jobs-panel-button" onclick="@(() => ChooseJob(job.Id))">Choisir</button>
@@ -51,6 +54,11 @@
 	public BusinessIdJobsPanel()
 	{
 		Log.Info(this.Id);
+	}
+
+	public int GetCurrentMemberCountOfJob(Job job)
+	{
+		return job.ListLinkedTo<Person>().Count;
 	}
 
 	public override void OnParentChanged()

@@ -12,6 +12,8 @@ namespace Roleplay.Models
     {
         public string Name { get; set; }
 
+        public int MaxMemberCount { get; set; } = 3;
+
         public Job(string name) : base("job")
         {
             Event.Register(this);

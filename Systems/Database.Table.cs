@@ -39,9 +39,15 @@ namespace Roleplay.Systems
 			}
 		}
 
-		public T GetTableById<T>(Guid id) where T : Table
+		public T? GetTableById<T>(Guid id) where T : Table
 		{
-			return (T)this.Tables[id];
+			if (this.Tables.ContainsKey(id))
+			{
+				return (T)this.Tables[id];
+			} else
+			{
+				return null;
+			}
 		}
 		
 		public Link<F,T>? GetLinkByIds<F, T>(Guid fromId, Guid toId) where F : Table where T : Table

@@ -13,14 +13,30 @@
 <root>
     <div class="tasks-bar-header">Tasks</div>
     <div class="tasks-bar-body">    
-        @if (Tasks.Count > 0)
+        @if (Jobs.Count > 0)
         {
-        @foreach (Models.Task task in Tasks)
-        {
-            <div class="tasks-item">
-                <div class="tasks-item-desc">@task.Action.Name @task.Action.TypeName</div>
-                <div class="tasks-item-count">@task.CurrentActionCount / @task.TriggerActionCount</div>
-            </div>
+            @if (Tasks.Count > 0)
+            {
+                @foreach (var kvp in TasksGrouped)
+                {
+                    <div class="list-item-group">
+                        <div class="list-item-group-title">@(kvp.Key.TryConvertTo<Job>().Name)</div>
+                        <div class="list-item-group-content">
+                        @foreach (var task in kvp.Value)
+                        {
+                            <div class="tasks-item">
+                                <div class="tasks-item-desc">@task.Action.Name @task.Action.TypeName</div>
+                                <div class="tasks-item-count">@task.CurrentActionCount / @task.TriggerActionCount</div>
+                            </div>
+                        }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="message">Vous avez pas de tâches.</div>
+
             }
         }
         else
@@ -32,7 +48,13 @@
 
 @code {
 
-    public List<Models.Task> Tasks => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedBy<Job>().ListLinkedTo<Models.Task>();
+    public Person ThisPerson => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId);
+
+    public List<Table> Jobs => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedBy<Job>();
+
+    public List<Models.Task> Tasks => Jobs.ListLinkedTo<Models.Task>();
+
+    public Dictionary<Table, List<Models.Task>> TasksGrouped => Tasks.GroupBy(t => Jobs.FirstOrDefault(j => j.IsOwnerOf(t.Id))).ToDictionary(g => g.Key, g => g.ToList());
 
     public override void Tick()
     {
@@ -41,6 +63,6 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(Tasks, Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).ListLinkedBy<Job>());
+        return HashCode.Combine(Tasks, Jobs);
     }
 }

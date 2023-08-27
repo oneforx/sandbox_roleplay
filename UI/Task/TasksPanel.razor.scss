@@ -1,26 +1,42 @@
 TasksPanel {
     position: absolute;
-    right: 0px;
-    top: 40%;
+    right: 10px;
+    top: 30%;
     background-color: rgb(0, 0, 0, 0.4);
     width: 400px;
     display: flex;
     flex-direction: column;
     border: 1px solid aqua;
+    border-radius: 10px;
 
     .tasks-bar-header {
         background-color: rgb(0, 0, 0, 0.6);
         color: white;
         padding: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
     }
 
     .tasks-bar-body {
         flex-direction: column;
         padding: 10px;
 
+        .list-item-group {
+            flex-direction: column;
+            margin-bottom: 10px;
+
+            .list-item-group-title {
+            }
+
+            .list-item-group-content {
+                flex-direction: column;
+            }
+        }
+
         .tasks-item {
             padding: 10px;
-            background-color: rgb(0, 0, 0, 0.7);
+            background-color: rgb(0, 0, 0, 0.6);
+            border-radius: 10px;
             margin-bottom: 10px;
 
             .label {
