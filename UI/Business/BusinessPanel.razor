@@ -27,7 +27,7 @@
                 @if (CurrentQuery != null && ThisPerson.IsOwnerOf(Guid.Parse(Utils.Utils.GetQuery("id", CurrentQuery))))
                 {
                     <div onclick="@(() => Navigate("/business/tasks?"+CurrentQuery))">Tasks</div>
-                    <div onclick="@(() => Navigate("/business/tasks?"+CurrentQuery))">Account</div>
+                    <div onclick="@(() => Navigate("/business/account?"+CurrentQuery))">Account</div>
                 }
             }
         </div>
@@ -39,6 +39,7 @@
     public static bool Enabled = false;
 
     public Person ThisPerson => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId);
+
 
     public BusinessPanel()
     {
@@ -54,6 +55,7 @@
         AddDestination("/business/tasks", typeof(BusinessIdTasksPanel));
         AddDestination("/business/tasks/details", typeof(BusinessIdTaskDetailsPanel));
         AddDestination("/business/tasks/create", typeof(BusinessIdTaskCreatePanel));
+        AddDestination("/business/account", typeof(BusinessIdAccountPanel));
     }
 
 

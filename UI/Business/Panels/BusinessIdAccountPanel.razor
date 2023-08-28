@@ -1,0 +1,60 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox.UI;
+@using Sandbox;
+@using System.Threading.Tasks;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+	<div class="subpage-header">
+		<div>Bank Account</div>
+	</div>
+	<div class="subpage-content">
+		@if(ThisBankAccounts.Count > 0)
+		{
+			<div>
+				Tracabilité de l'argent
+			</div>
+		}
+		else
+		{
+			<div>Votre entreprise n'as pas de compte bancaire, veuillez en créer un.</div>
+		}
+	</div>
+</root>
+
+@code {
+	public NavHostPanel Navigator;
+
+	public Business ThisBusiness => Database.Current.GetTableById<Business>(Guid.Parse(this.Id));
+
+	public List<BankAccount> ThisBankAccounts => ThisBusiness.ListLinkedTo<BankAccount>().ConvertTo<BankAccount>();
+
+	public List<Business> AllBusinessOfPerson => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).GetListOfBusinesses();
+
+	public bool IsOwnerOf(Guid businessId)
+	{
+		return Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId).IsOwnerOf(businessId);
+	}
+
+	public override void OnParentChanged()
+	{
+		base.OnParentChanged();
+
+
+		Navigator = Ancestors.OfType<NavHostPanel>().FirstOrDefault();
+	}
+
+
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine(AllBusinessOfPerson.Count);
+	}
+}

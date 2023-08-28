@@ -25,7 +25,6 @@ namespace Roleplay.Systems
             { "Bank", typeof(Bank) },
             { "BankAccount", typeof(BankAccount) },
             { "Business", typeof(Business) },
-            { "BusinessMember", typeof(BusinessMember) },
             { "Invitation", typeof(Invitation) },
             { "Job", typeof(Job) },
             { "Map", typeof(Map) },
@@ -37,14 +36,14 @@ namespace Roleplay.Systems
 
         public static Dictionary<string, Type> LinkTypes = new()
         {
-            { "BusinessToBusinessMember", typeof(Link<Business, BusinessMember>) },
-            { "BusinessMemberToJob", typeof(Link<BusinessMember, Job>) },
             { "PersonToBusiness", typeof(Link<Person, Business>) },
-            { "BusinessToJob", typeof(Link<Business, Job>) },
+            { "BusinessToPerson", typeof(Link<Business, Person>) },
+			{ "BusinessToJob", typeof(Link<Business, Job>) },
             { "BusinessToTask", typeof(Link<Business, Models.Task>) },
             { "JobToTask", typeof(Link<Job, Models.Task>) },
             { "JobToPerson", typeof(Link<Job, Models.Person>) },
-		};
+            { "PersonToBankAccount", typeof(Link<Person, BankAccount>) },
+        };
 
 
         public string Name { get; set; }

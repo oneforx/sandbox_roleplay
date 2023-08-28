@@ -1,0 +1,61 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using System.Threading.Tasks;
+@using Sandbox.UI;
+@using Sandbox;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@inherits Sandbox.UI.NavHostPanel
+@namespace Roleplay.UI
+
+<root>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <button onclick="@(() => Navigate("/"))">Home</button>
+            <button onclick="@(() => Navigate("/create"))">Creer un compte</button>
+            <button onclick="@(()=> Navigate("/accounts"))"><h1>Mes Comptes</h1></button>
+        </div>
+        <div class="sidebar-nav">
+            @if (CurrentUrl != "/" && CurrentUrl != "/accounts" && CurrentQuery != null)
+            {
+                <div onclick="@(() => Navigate("/accounts/details?"+CurrentQuery))">Details</div>
+            }
+        </div>
+    </div>
+    <div class="navigator-canvas" slot="navigator-canvas"></div>
+</root>
+
+@code {
+    public static bool Enabled = false;
+
+    public BankPanel()
+    {
+        DefaultUrl = "/";
+
+        AddDestination("/", typeof(BankHomePanel));
+        AddDestination("/create", typeof(BankAccountCreatePanel));
+        AddDestination("/accounts", typeof(BankAccountListPanel));
+        AddDestination("/accounts/details", typeof(BankAccountDetailsPanel));
+
+        Event.Register(this);
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        if (BankPanel.Enabled)
+        {
+            Parent.SetClass("open-bank", true);
+            SetClass("hidden", false);
+        }
+        else
+        {
+            Parent.SetClass("open-bank", false);
+            SetClass("hidden", true);
+        }
+    }
+}

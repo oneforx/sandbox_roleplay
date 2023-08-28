@@ -1,0 +1,66 @@
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using Sandbox;
+@using Sandbox.UI;
+@using System.Threading.Tasks;
+@using Roleplay.Models;
+@using Roleplay.Systems;
+
+@attribute [StyleSheet]
+@namespace Roleplay.UI
+
+<root>
+    <div class="subpage-header">
+        <div>Mes comptes</div>
+    </div>
+    <div class="subpage-content">
+        @if (MyBankAccounts.Count > 0)
+        {
+            @foreach(BankAccount bankAccount in MyBankAccounts)
+            {
+                <div class="bank-account-item">
+                    <div>Compte @bankAccount.Id</div>
+                    <div>
+                        <label> @bankAccount.Money euros</label>
+                        <div class="see-bank-button">Voir</div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div>Vous n'avez pas de compte, veuillez en créer un. <button class="create-account" onclick="@CreateAccount">Créer</button></div>
+        }
+    </div>
+</root>
+
+@code {
+    public Person ThisPerson => Database.Current.GetPersonBySteamId(Game.LocalClient.SteamId);
+
+    public List<BankAccount> MyBankAccounts => ThisPerson.ListLinkedTo<BankAccount>().ConvertTo<BankAccount>();
+
+    public void CreateAccount()
+    {
+        CreateAccountRemote(ThisPerson.Id.ToString());
+    }
+
+    [ConCmd.Server("create-account")]
+    public static void CreateAccountRemote(string personId)
+    {
+        BankAccount newBankAccount = new BankAccount(50000);
+        Database.Current.Tables[newBankAccount.Id] = newBankAccount;
+        Person ThisPerson = Database.Current.GetPersonById(Guid.Parse(personId));
+        Link<Person, BankAccount> newLinkPersonToBankAccount = ThisPerson.LinkTo<BankAccount>(newBankAccount.Id).ConvertTo<Person, BankAccount>();
+        Database.AddTableOnClient(newBankAccount.Serialize());
+        Database.AddTableOnClient(newLinkPersonToBankAccount.Serialize());
+
+    }
+
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(MyBankAccounts.Count);
+    }
+}
