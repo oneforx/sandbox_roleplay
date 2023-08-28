@@ -4,7 +4,7 @@ namespace Roleplay.Models
     {
         public float Money { get; set; }
 
-        public BankAccount(float money)
+        public BankAccount(float money) : base("bankAccount")
         {
             Money = money;
         }
